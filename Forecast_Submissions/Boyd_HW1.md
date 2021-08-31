@@ -8,3 +8,6 @@ cfs, so I decided to estimate a higher value since this has been a wetter year
 for our area. I chose a lower number for the Week 2 discharge value, 188 cfs,
 since the weather has been drying up some and this value is closer to the
 average daily discharge value for August over the last 32 years.
+
+## Grade
+3/3 - great job!
