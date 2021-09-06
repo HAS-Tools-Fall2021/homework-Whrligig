@@ -21,3 +21,6 @@ adjusted my guess for this week to reflect a lower number. I also estimated
 that next week the flow will be about 137 cfs, since it seems as though the rain
 has been dropping off and this value is closer to the average flow value for this
 time of year.
+
+## Grade:
+3/3 - Awesome historical analysis and nice job formatting your header! 
