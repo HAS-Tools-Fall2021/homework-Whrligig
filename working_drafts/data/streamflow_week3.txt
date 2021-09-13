@@ -25,7 +25,7 @@
 #     A  Approved for publication -- Processing and review completed.
 #     P  Provisional data subject to revision.
 #     e  Value has been estimated.
-# 
+#
 agency_cd	site_no	datetime	5707_00060_00003	5707_00060_00003_cd
 5s	15s	20d	14n	10s
 USGS	09506000	1989-01-01	207	A
