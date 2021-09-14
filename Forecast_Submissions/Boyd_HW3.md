@@ -2,6 +2,13 @@
 ##### 09/13/21
 ##### HW #3
 
+___
+### Grade
+3/3: Great work!
+
+Two small notes: For the %values I was intending for you to calculate the percentage of September days rather than the percentage of all days but your answer is fine.  Also, it looks like you did your calculations for August (month=8) rather than September (month =9)
+_____
+
 The average for last week's flow was much lower than I predicted, only about 115 cfs.
 As a result, I have lowered my one and two week predictions this week even further than in previous weeks.
 My one week prediction is only 96 cfs, and my two week prediction is 84 cfs.
