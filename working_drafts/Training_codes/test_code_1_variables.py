@@ -98,4 +98,3 @@ type(b)
 type(c)
 
 
-# %%
