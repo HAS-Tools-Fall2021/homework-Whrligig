@@ -103,7 +103,7 @@ len(day)
 ilist = []      
 
 for i in range(len(flow)):
-        if flow [i] > 96 and month[i] == 8:
+        if flow [i] > 96 and month[i] == 9:
                 ilist.append(i)
 
 print(len(ilist))
@@ -111,7 +111,7 @@ print(len(ilist))
 jlist = []
 
 for i in range(len(flow)):
-        if flow [i] > 84 and month[i] == 8:
+        if flow [i] > 84 and month[i] == 9:
                 jlist.append(i)
 
 print(len(jlist))
@@ -122,7 +122,7 @@ print(len(jlist))
 klist = []
 
 for i in range(len(flow)):
-        if flow[i] > 96 and month[i] == 8 and year[i] <= 2000:
+        if flow[i] > 96 and month[i] == 9 and year[i] <= 2000:
                 klist.append(i)
 
 print(len(klist))
@@ -130,7 +130,7 @@ print(len(klist))
 mlist = []
 
 for i in range(len(flow)):
-        if flow[i] > 84 and month[i] == 8 and year[i] <= 2000:
+        if flow[i] > 84 and month[i] == 9 and year[i] <= 2000:
                 mlist.append(i)
 
 print(len(mlist))
@@ -143,7 +143,7 @@ print(len(mlist))
 nlist = []
 
 for i in range(len(flow)):
-        if flow[i] > 96 and month[i] == 8 and year[i] >= 2010:
+        if flow[i] > 96 and month[i] == 9 and year[i] >= 2010:
                 nlist.append(i)
 
 print(len(nlist))
@@ -151,7 +151,7 @@ print(len(nlist))
 olist = []
 
 for i in range(len(flow)):
-        if flow[i] > 84 and month[i] == 8 and year[i] >= 2000:
+        if flow[i] > 84 and month[i] == 9 and year[i] >= 2000:
                 olist.append(i)
 
 print(len(olist))
@@ -160,7 +160,7 @@ print(len(olist))
 # is 4270, but I couldn't figure out how to write a code to find this number.
 # I just calculated it from the text file instead.
 
-ilist2 = [i for i in range(len(flow)) if month[i]==8 and day[i] <= 14]
+ilist2 = [i for i in range(len(flow)) if month[i]==9 and day[i] <= 14]
 
 subset = [flow[j] for j in ilist2]
 
@@ -168,7 +168,7 @@ print(np.mean(subset))
 
 
 
-ilist3 = [i for i in range(len(flow)) if month[i]==8 and day[i] >= 15]
+ilist3 = [i for i in range(len(flow)) if month[i]==9 and day[i] >= 15]
 
 subset = [flow[j] for j in ilist3]
 
