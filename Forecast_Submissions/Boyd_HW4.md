@@ -2,6 +2,10 @@
 ###### Homework #4
 ###### 09/20/21
 
+______________
+## Grade
+3/3 - Great work! Seems like things are pushing to the right branch now so I think we are good. 
+______________
 Quantiles (for all flows):
 
     10th: 61.77 cfs
