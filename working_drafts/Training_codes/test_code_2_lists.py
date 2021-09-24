@@ -13,6 +13,15 @@ boulder_avg_precip = [1, jan, "january"]
 
 
 # %%
+# Testing Indexing
+
+months = ["January", "February", "March", "May"]
+
+months[:3]
+
+
+
+# %%
 
 # Testing object type of a function
 
