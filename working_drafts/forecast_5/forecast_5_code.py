@@ -56,11 +56,11 @@ data[['flow']].describe()
 
 # %%
 # Question 3:
-month_data = data.groupby(['month'])[['flow']].describe()
+data.groupby(['month'])[['flow']].describe()
 
 # %%
 # Question 4:
-# Using sort_values should give an abbreviated table that automatically has the max 5 and min 5 flow values,
+# Using sort_values should give an abbreviated table of the dataset that automatically has the max 5 and min 5 flow values shown,
 # but in case it does not, the additional code below can also be used to find the values, although not in one table.
 data.sort_values(by='flow', ascending=False)
 
@@ -69,5 +69,20 @@ print(data.sort_values(by='flow', ascending=False).head(5))
 print('The 5 smallest flow values for the period of record:')
 print(data.sort_values(by='flow', ascending=False).tail(5))
 
-
 # %%
+# Question 5:
+print(min_array)
+min_array = np.array([])
+max_array = np.array([])
+
+for i in data.flow:
+        if i in (data.month == i) :
+                data.groupby(['month'])[['flow']].describe()
+                data.sort_values(by='month', ascending=False).tail(1)
+        else:
+                print('happy')
+
+data.groupby(['month'])
+
+
+
