@@ -2,6 +2,11 @@
 ##### HW #5
 ##### 09/26/21
 
+_____
+## Grade:
+3/3: Nice work. A solution for #5 is posted but feel free to stop by my office hours if you want to walk through debugging your approac. The main issue is that you aren't using your iterator (i) inside your loop anywhere.  
+_____
+
 Forecast Prediction:
 
 1 Week: 93 cfs,
