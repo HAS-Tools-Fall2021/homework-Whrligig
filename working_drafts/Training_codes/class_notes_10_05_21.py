@@ -18,32 +18,33 @@ data['month'] = pd.DatetimeIndex(data['datetime']).month
 data['day'] = pd.DatetimeIndex(data['datetime']).day
 data['dayofweek'] = pd.DatetimeIndex(data['datetime']).dayofweek
 
-oct_avgs = np.zeros[31]
+oct_avgs = np.zeros(31)
 
-for i in range(1,32):
+for i in range(0, 31):
     day = i + 1
-    data_loop = data[(data['day']==day) & (data['month']==10)]
+    data_loop = data[(data['day'] == day) & (data['month'] == 10)]
     oct_avgs[i] = np.mean(data_loop['flow'])
 
+print(oct_avgs)
 
 # Class Solution
 oct_mean = np.zeros(31)
 for d in range(31):
-    daytemp = d+1
-    tempdata = data[(data['month']==10) & (data['day'] == daytemp)]
+    daytemp = d + 1
+    tempdata = data[(data['month'] == 10) & (data['day'] == daytemp)]
     oct_mean[d] = np.mean(tempdata['flow'])
     print('Iteration', d, 'Day=', daytemp, 'Flow=', oct_mean[d])
 
 
-
+# Example of creating a function
 def day_mean(month, days_in_month, data):
     month_mean = np.zeros(days_in_month)
     for d in range(days_in_month):
         daytemp = d+1
-        tempdata = data[(data['month']==month) & (data['day'] == daytemp)]
+        tempdata = data[(data['month'] == month) & (data['day'] == daytemp)]
         month_mean[d] = np.mean(tempdata['flow'])
-        #print('Iteration', d, 'Day=', daytemp, 'Flow=', oct_mean[d])
-    
+        # print('Iteration', d, 'Day=', daytemp, 'Flow=', oct_mean[d])
+
     return month_mean
 
 
