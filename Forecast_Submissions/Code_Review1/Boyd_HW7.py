@@ -11,7 +11,7 @@ import datetime
 # Set the file name and path to where you have stored the data
 # Modify file name and path as needed to access streamflow data for Week 7
 filename = 'streamflow_week7.txt'
-filepath = os.path.join(r'C:\Users\conna\Documents\HAS_Tools_Repo_Dump\homework\working_drafts\data', filename)
+filepath = os.path.join('..\..\working_drafts\data', filename)
 print(os.getcwd())
 print(filepath)
 
