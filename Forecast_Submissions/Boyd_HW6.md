@@ -6,6 +6,8 @@
 ____
 ## Grade
 1/3: Great work I like your logic and what you did to mix up the plotting. However,non of your plots are coming through in the markdown. This is because its looking for your png files three directories up in an images folder. You whoudl copy your images folder into your forecast submissions folder and then change the path here. If you need help ask me after class and you can resubmit once its fixed. 
+
+Revised Grade 3/3: Plots fixed
 ____
 1 Week: 180 cfs, 
 2 Week: 174 cfs
