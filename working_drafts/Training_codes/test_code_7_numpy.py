@@ -57,3 +57,13 @@ array2 = np.zeros(17)
 array3 = np.ones(5)
 
 array4 = dataframe.to_numpy()
+
+# Key Attributes
+
+array1.ndim
+array3.ndim
+array5 = np.array([])
+
+np.insert(array5,0,5)
+print(array5)
+
