@@ -68,11 +68,11 @@ This plot has been saved automatically as "Oct_Hist.png" in the file titled "ima
 
 1 Week Forecast Submission, Week 7:
 
-
+168 cfs
 
 2 week Forecast Submission, Week 7:
 
-
+157 cfs
 
 Code Review Rubric: (feel free to delete the rubric after completing your
   review. I leave it up to you on how you prefer to write it!)
@@ -86,20 +86,35 @@ Wherever possible include line numbers and specific pointers. Remember the goal 
 
 And of course remember to always be courteous to the person you are reviewing!
 
+Sierra's Notes: 
+
+I sadly could not run the code, but I tried to give feeback!
+
+The script is relatively easy to understand. In the function, all the variables are defined which is very helpful for another user to interpret. The use of the functions was very well done as the user took another step forward and used the functions to creat graphs. I think that lines 135 and 144 are maybe not the most useful code, but could have been useful for the writer to have. This was the only section of code where I wish there were more commenting to know what should be output when run. Other than those lines, the code was very well written and relaively easy to follow. I like how lots of steps were taken to create really nice graphs. The PEP8 style was mostly followed except for a few indentations and spacing, which I do not find an issue of. 
+
 ### Questions to consider
 1. Is the script easy to read and understand?
  - Are variables and functions named descriptively when useful?
+  5/5
  - Are the comments helpful?
+  4/5
  - Can you run the script on your own easily?
+
  - Are the doc-strings useful?
+  5/5
+  
 
 2. Does the code follow PEP8 style consistently?
  - If not are there specific instances where the script diverges from this style?
+5/5
 
 3. Is the code written succinctly and efficiently?
  - Are there superfluous code sections?
+4/5
  - Is the use of functions appropriate?
+5/5
  - Is the code written elegantly without decreasing readability?
+4/5
 
 ### Rubric
 (Adapted from Kyle Mandli [Intro to Numerical Methods](https://github.com/mandli/intro-numerical-methods))
