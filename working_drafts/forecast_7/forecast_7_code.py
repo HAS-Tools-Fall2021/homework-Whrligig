@@ -172,3 +172,10 @@ fig.savefig('../images/Oct_Hist.png')
 # %%
 print('1 Week Forecast:', 168, 'cfs')
 print('2 Week Forecast:', 157, 'cfs')
+
+
+# Options for style and axis locators
+sns.set(style="darkgrid")
+df = sns.load_dataset('iris')
+
+ax.xaxis.set_major_locator(plt.MaxNLocator(4))
