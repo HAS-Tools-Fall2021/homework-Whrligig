@@ -13,13 +13,7 @@ import datetime
 # The path should work, but modify file name and path as needed to
 # access streamflow data for Week 8.
 filename = 'streamflow_week8.txt'
-filepath = os.path.join('../data', filename)
-print(os.getcwd())
-print(filepath)
-
-# Filepath for forecast submission folder.
-filename = 'streamflow_week8.txt'
-filepath = os.path.join('../../working_drafts/data', filename)
+filepath = os.path.join('../working_drafts/data', filename)
 print(os.getcwd())
 print(filepath)
 
@@ -39,6 +33,9 @@ data = pd.read_table(filepath, sep='\t', skiprows=30,
 print('Flow for each day of the previous forecast period:')
 last_week = data[['flow']].tail(7)
 print(last_week)
+
+print('----------')
+
 print('Avg flow for last week was:', last_week['flow'].mean())
 
 print('----------')
@@ -63,9 +60,9 @@ ax.grid(None, 'major', 'both', alpha=0.15)
 ax.legend(loc='lower right')
 fig.set(facecolor='lightgrey')
 plt.show()
-
-fig.savefig('../../Forecast_Submissions/images/Wk7_Obs.png',
-            dpi=300, bbox_inches='tight')
+# Figures were saved in advance, but the code used is listed below.
+# fig.savefig('../Forecast_Submissions/images/Wk7_Obs.png',
+#             dpi=300, bbox_inches='tight')
 
 # %%
 # Create function that generates plots of historical flows
@@ -154,8 +151,9 @@ fcst_end = 23
 
 fig = historical_weekly_flow(start_year, end_year, fcst_month, fcst_st,
                              fcst_end)
-fig.savefig('../../Forecast_Submissions/images/1Wk_Flow_History.png',
-            dpi=300, bbox_inches='tight')
+# Figures were saved in advance, but the code used is listed below.
+# fig.savefig('../Forecast_Submissions/images/1Wk_Flow_History.png',
+#             dpi=300, bbox_inches='tight')
 
 # Run new function for 2 Week forecast period, create plot
 # of 5 year history.
@@ -167,8 +165,9 @@ fcst_end = 30
 
 fig = historical_weekly_flow(start_year, end_year, fcst_month, fcst_st,
                              fcst_end)
-fig.savefig('../../Forecast_Submissions/images/2Wk_Flow_History.png',
-            dpi=300, bbox_inches='tight')
+# Figures were saved in advance, but the code used is listed below.
+# fig.savefig('../Forecast_Submissions/images/2Wk_Flow_History.png',
+#             dpi=300, bbox_inches='tight')
 
 # %%
 # Print histogram of October flows for the whole dataset, 1989-2021.
@@ -182,8 +181,9 @@ ax.hist(np.log10(month['flow']), bins=30,
 ax.set(xlabel='Flow (cfs) [log scale]', ylabel='count', title=plot_title)
 ax.grid(None, 'major', 'both', alpha=0.15)
 fig.set(facecolor='lightgrey')
-fig.savefig('../../Forecast_Submissions/images/Month_Histogram.png',
-            dpi=300, bbox_inches='tight')
+# Figures were saved in advance, but the code used is listed below.
+# fig.savefig('../Forecast_Submissions/images/Month_Histogram.png',
+#             dpi=300, bbox_inches='tight')
 
 # %%
 print('1 Week Forecast:', 148, 'cfs')
