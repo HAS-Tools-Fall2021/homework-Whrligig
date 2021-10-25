@@ -19,7 +19,7 @@ data['day'] = pd.DatetimeIndex(data['datetime']).day
 data['dayofweek'] = pd.DatetimeIndex(data['datetime']).dayofweek
 
 # %%
-oct_median = np.empty(31)
+oct_median = np.zeros(31)
 
 for i in range(31):
     day = i + 1
