@@ -2,6 +2,11 @@
 #### HW #9
 #### 10/25/21
 
+____________
+## Grade:
+**2.5/3:** Good effort. that was a Tricky one. I subtracted 0.5 point since you couldn't get the data downloaded and plotted but hopefully our example from class will help you with that in future weeks. 
+____________
+
 1.) A brief summary of the how you chose to generate your forecast this week.
 
 I selected values similar to last week's flow due to the flattening out of the streamflow seen throughout last week's forecast period. I used the forecast plot and mean value of each day for last week's forecast period.
