@@ -1,29 +1,47 @@
 # %%
 import os
-import numpy as np
-import pandas as pd
 import geopandas as gpd
 import contextily as ctx
 import fiona
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-from shapely.geometry import Point
 
 # %%
 # Import stream gage locations for all of the US
-file = os.path.join('..', 'data', 'Shapefiles', 'gagesII_9322_sept30_2011.shp')
-gages = gpd.read_file(file)
+gages_file = os.path.join('..', 'data', 'Shapefiles',
+                          'gagesII_9322_sept30_2011.shp')
+gages = gpd.read_file(gages_file)
+# Import HUC8 data for AZ
+huc8_file = os.path.join('..', 'data', 'Shapefiles',
+                         'NHD_H_15060203_HU8_GDB.gdb')
+fiona.listlayers(huc8_file)
+HUC8 = gpd.read_file(huc8_file, layer='WBDHU8')
+# Import AZ streams data
+AZstream_file = os.path.join('..', 'data', 'Shapefiles',
+                             'NHD_H_Arizona_State_GDB.gdb')
+fiona.listlayers(AZstream_file)
+AZstreams = gpd.read_file(AZstream_file, layer='WBDLine')
 
-# See first 5 entries in geodataframe:
+# %%
+# See first 5 entries in geodataframes:
 gages.head()
-# See column names in geodataframe:
+HUC8.head()
+AZstreams.head()
+# See column names in geodataframes:
 gages.columns
-# Show how many entries in the whole geodataframe:
+HUC8.columns
+AZstreams.columns
+# Show how many entries in the whole geodataframe for each geodataframe:
 gages.shape
-# Check projection of geodataframe using the following code:
+HUC8.shape
+AZstreams.shape
+# Check projection of geodataframes using the following code:
 gages.crs
-# Check the total spatial extent using the following code:
+HUC8.crs
+AZstreams.crs
+# Check the total spatial extents using the following code:
 gages.total_bounds
+HUC8.total_bounds
+AZstreams.total_bounds
 
 # %%
 # Get list of States in the geodataframe
@@ -33,76 +51,41 @@ gages_AZ = gages[gages['STATE'] == 'AZ']
 # Show how many entries in the AZ geodataframe:
 gages_AZ.shape
 
-
-# %%
-# See if our station is in the list of station IDs
+# See if our station (09506000) is in the list of station IDs 
 gages_AZ.STAID.unique()
 # Create geodataframe of just our station
 verde_station = gages_AZ[gages_AZ['STAID'] == '09506000']
 verde_station.head()
 
+# %%
+# See all stations names on Verde River
+for name in gages_AZ['STANAME']:
+    if 'VERDE R' in name:
+        print(name)
+
+# %%
+# Reproject the HUC8 layer and AZ streams layer to the stream gages CRS
+HUC8_reproj = HUC8.to_crs(gages_AZ.crs)
+AZstreams_reproj = AZstreams.to_crs(gages_AZ.crs)
+
+# Focus geodataframes only on extent of our watershed to make map more readable
+clip_gages = gpd.clip(gages_AZ, HUC8_reproj)
+clip_streams = gpd.clip(AZstreams_reproj, HUC8_reproj, keep_geom_type=True)
+
+# %%
 # Plot layers, creating map
 fig, ax = plt.subplots(figsize=(15, 15))
-gages_AZ.plot(ax=ax)
-verde_station.plot(ax=ax, color='magenta')
+ax.set(title='Lower Verde River Watershed Area, AZ', xlabel='Easting',
+       ylabel='Northing')
+layer1 = HUC8_reproj.boundary.plot(ax=ax, label='Watershed Boundaries',
+                                   edgecolor='navy', linewidth=3)
+layer2 = HUC8_reproj.plot(ax=ax, alpha=0.25)
+layer3 = clip_streams.plot(ax=ax, color='darkgreen',
+                           label='Streams in Watershed')
+layer4 = clip_gages.plot(ax=ax, color='aqua', label='Stream Gages')
+layer5 = verde_station.plot(ax=ax, color='magenta', marker='^', markersize=200,
+                            label='Stream Gage Used for Class Forecasts')
+ctx.add_basemap(ax, crs=gages_AZ.crs)
+ax.legend(loc='lower right')
 plt.show()
-
-
-# %%
-
-# Instructions for how to search for gridded climate data
-# at NOAA: Physical Sciences Lab
-# https://psl.noaa.gov/data/gridded_help/howtosub.html 
-# 
-# Search page (highlight multiple variables: Air Temperuature, 
-# Precipitation, Precipitation Amount, Precipitation Rate)
-# https://psl.noaa.gov/cgi-bin/db_search/SearchMenus.pl
-#
-# Select NCEP Reanalysis (chosen for the long & most recent records) 
-# 
-# Click "Make a plot or subset"
-# Subset to a time & lat/lon range, data is 1deg x 1deg
-# 1990-01-01-00Z : 2020-10-20-00Z
-# 34-36N, 247-249E 
-# 
-# Output options: create a plot first, this will ensure that 
-# you've selected a small enough subset that is downloadable 
-# in your browser. 
-#
-# Then click, "FTP the data used to generate this plot", and 
-# "FTP a copy of the file" (file size: ~ 2Mb)
-
-# My example: 
-# https://psl.noaa.gov/cgi-bin/GrADS.pl?dataset=NCEP%20Reanalysis%20Daily%20Averages;DB_did=195;file=%2FDatasets%2Fncep.reanalysis.dailyavgs%2Fsurface_gauss%2Fpevpr.sfc.gauss.1948.nc%20pevpr.sfc.gauss.y4.nc%20105513;variable=pevpr;DB_vid=3174;DB_tid=89283;units=W%2Fm2;longstat=Mean;DB_statistic=Mean;stat=;lat-begin=88.54S;lat-end=88.54N;lon-begin=0.00E;lon-end=358.13E;dim0=time;year_begin=1948;mon_begin=Jan;day_begin=1;year_end=1948;mon_end=Jan;day_end=1;X=lon;Y=lat;output=file;bckgrnd=black;use_color=on;fill=lines;cint=;range1=;range2=;scale=100;maskf=%2FDatasets%2Fncep.reanalysis.dailyavgs%2Fsurface%2Fland.nc;maskv=Land-sea%20mask;submit=Create%20Plot%20or%20Subset%20of%20Data;time-begin=1%20Jan%201%201948;time-end=1%20Jan%201%201948
-#
-# Repeat for other variables          
-
-precip_reanal_file = 'data/NCEP_reanalysis_prrate_19900101_20200930.nc'
-temp_reanal_file   = 'data/NCEP_reanalysis_temp_19900101_20200930.nc''
-
-# use netCDF4.Dataset to read in .nc file
-precip_reanal_data = Dataset(precip_reanal_file)
-temp_reanal_data = Dataset(temp_reanal_file)
-# find varibale names and dimesions
-print(precip_reanal_data.variables)
-print(temp_reanal_data.variables)
-# extract specific variables: lats, lons and precip
-precip_reanalysis = precip_reanal_data.variables['prate'][:, 0, 0]*86400
-temp_reanalysis = (temp_reanal_data.variables['air'][:, 0, 0]-273.15)*(9./5.)+32
-
-# %%
-precip_reanalysis_s = pd.Series(precip_reanalysis,index=pd.date_range(start='1/1/1990', end='30/09/2020',tz='UTC'))
-temp_reanalysis_s = pd.Series(temp_reanalysis,index=pd.date_range(start='1/1/1990', end='30/09/2020',tz='UTC'))
-
-df_reanalysis = pd.DataFrame({"Reanalysis Temp":temp_reanalysis_s, "Reanalysis Precip":precip_reanalysis_s}, index=precip_reanalysis_s.index)
-#%%
-
-fig, ax1 = plt.subplots(1,1,figsize=(6,4),sharex=True)
-df_reanalysis["Reanalysis Temp"].plot(ax=ax1, color='r', label='Temperature')
-ax2 = ax1.twinx() 
-df_reanalysis["Reanalysis Precip"].plot(ax=ax2, color='b', label='Precipitation')
-ax1.set_ylabel('Temp [$\\mathrm{^\circ F}]$')
-ax2.set_ylabel('Precip [$\\mathrm{mm}]$')
-ax1.legend(loc=2)
-ax2.legend(loc=1)
-plt.show()
+# fig.savefig('Verde_Watershed_Map', bbox_inches='tight')
