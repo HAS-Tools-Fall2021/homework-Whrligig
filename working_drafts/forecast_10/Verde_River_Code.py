@@ -10,6 +10,45 @@ import matplotlib.pyplot as plt
 from shapely.geometry import Point
 
 # %%
+# Import stream gage locations for all of the US
+file = os.path.join('..', 'data', 'Shapefiles', 'gagesII_9322_sept30_2011.shp')
+gages = gpd.read_file(file)
+
+# See first 5 entries in geodataframe:
+gages.head()
+# See column names in geodataframe:
+gages.columns
+# Show how many entries in the whole geodataframe:
+gages.shape
+# Check projection of geodataframe using the following code:
+gages.crs
+# Check the total spatial extent using the following code:
+gages.total_bounds
+
+# %%
+# Get list of States in the geodataframe
+gages.STATE.unique()
+# Create smaller geodataframe for just the AZ stream gages
+gages_AZ = gages[gages['STATE'] == 'AZ']
+# Show how many entries in the AZ geodataframe:
+gages_AZ.shape
+
+
+# %%
+# See if our station is in the list of station IDs
+gages_AZ.STAID.unique()
+# Create geodataframe of just our station
+verde_station = gages_AZ[gages_AZ['STAID'] == '09506000']
+verde_station.head()
+
+# Plot layers, creating map
+fig, ax = plt.subplots(figsize=(15, 15))
+gages_AZ.plot(ax=ax)
+verde_station.plot(ax=ax, color='magenta')
+plt.show()
+
+
+# %%
 
 # Instructions for how to search for gridded climate data
 # at NOAA: Physical Sciences Lab
