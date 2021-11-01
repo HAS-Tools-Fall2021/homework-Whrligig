@@ -10,18 +10,10 @@ import datetime
 
 # %%
 # Setting the file name and path to where I have stored the data.
-# The path should work, but modify file name and path as needed to
-# access streamflow data for Week 8.
 filename = 'streamflow_week10.txt'
-filepath = os.path.join('..', 'data', filename)
+filepath = os.path.join('..', 'working_drafts', 'data', filename)
 print(os.getcwd())
 print(filepath)
-
-# Filepath for forecast submission folder.
-# filename = 'streamflow_week10.txt'
-# filepath = os.path.join('..', '..', 'working_drafts', 'data', filename)
-# print(os.getcwd())
-# print(filepath)
 
 # %%
 # Read the data into a pandas dataframe.
@@ -64,8 +56,8 @@ ax.legend(loc='lower right')
 fig.set(facecolor='lightgrey')
 plt.show()
 
-fig.savefig('../../Forecast_Submissions/images/Wk9_Obs.png',
-            dpi=300, bbox_inches='tight')
+# fig.savefig('../../Forecast_Submissions/images/Wk9_Obs.png',
+#            dpi=300, bbox_inches='tight')
 
 # %%
 # Create function that generates plots of historical flows
