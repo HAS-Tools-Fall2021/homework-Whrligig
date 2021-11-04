@@ -129,3 +129,7 @@ dmypy.json
 .pyre/
 
 working_drafts/data/Shapefiles/
+
+working_drafts/data/Shapefiles_and_GDBs/
+
+working_drafts/data/Hierarchical_Data/
