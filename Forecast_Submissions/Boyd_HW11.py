@@ -17,16 +17,12 @@ from netCDF4 import Dataset
 
 # %%
 # Setting the file name and path to where I have stored the data.
+# Filepath for forecast submission folder.
+
 filename = 'streamflow_week11.txt'
-filepath = os.path.join('..', 'data', filename)
+filepath = os.path.join('..', '..', 'working_drafts', 'data', filename)
 print(os.getcwd())
 print(filepath)
-
-# Filepath for forecast submission folder.
-# filename = 'streamflow_week10.txt'
-# filepath = os.path.join('..', '..', 'working_drafts', 'data', filename)
-# print(os.getcwd())
-# print(filepath)
 
 # %%
 # Read the data into a pandas dataframe.
