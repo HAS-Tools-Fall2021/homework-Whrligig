@@ -1,6 +1,10 @@
 ## Connal Boyd
 ## HW #11
 ## 11/08/2021
+___
+### Grade
+3/3: Great work. I like your choice of variables!
+___
 
 ### 1.) A brief summary of how you chose to generate your forecast this week.
 
