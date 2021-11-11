@@ -1,14 +1,23 @@
 # @Date:   2021-11-11T14:10:37-07:00
 # @Last modified time: 2021-11-11T14:48:29-07:00
 
-
-
 # %%
 
 import os
-import numpy as np
 import pandas as pd
+import numpy as np
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import geopandas as gpd
+import fiona
+import contextily as ctx
+import shapely
+from shapely.geometry import Point
+from netCDF4 import Dataset
+
 
 
 # Our Plan:
