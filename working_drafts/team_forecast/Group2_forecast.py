@@ -18,13 +18,18 @@ import shapely
 from shapely.geometry import Point
 from netCDF4 import Dataset
 
-
-
 # Our Plan:
-# Data
-# Map
-# Graphs
-# Forecast Numbers
+
+# Linear regression -- Xingyu (Use middle 10 years,
+# then use most recent 10 years for regression)
+       # Air temp regression with precip rate
+       # Precip regression with streamflow
+# Adding in precip netcdf, Air Temp netcdf,
+       # combining in one dataframe -- Connal
+# Add chart of previous week's flow -- Connal
+# Add function (tie to regression in some way, likely w/ a graph) -- Steph
+# Add Map -- Andrew
+# Add timeseries plots of netcdf, spatial means of November -- Andrew
 
 flow_url = "https://waterdata.usgs.gov/nwis/dv?cb_00060=on&format=rdb" \
            "&site_no=09506000&referred_module=sw" \
@@ -33,14 +38,6 @@ flow_data = pd.read_table(flow_url, sep='\t', skiprows=30,
                           names=['agency_cd', 'site_no', 'datetime', 'flow',
                                  'code'], parse_dates=['datetime'],
                           index_col=['datetime'])
-
-
-# Linear regression
-# precip netcdf, evapotrans cdf, compare to streamflow
-# Add air temperature data
-       # Air temp regression with precip rate
-       # Precip regression with streamflow
-# Use middle 10 years, then use most recent 10 years for regression
 
 # %%
 # Mapping section - feel free to tinker with
@@ -54,9 +51,9 @@ flow_data = pd.read_table(flow_url, sep='\t', skiprows=30,
 # https://water.usgs.gov/GIS/metadata/usgswrd/XML/gagesII_Sept2011.xml#stdorder
 
 # Reading it using geopandas
-file = os.path.join('Map_Data', 'gagesII_9322_point_shapefile',
-                    'gagesII_9322_sept30_2011.shp')
-gages = gpd.read_file(file)
+gages_file = os.path.join('..', 'data', 'Shapefiles',
+                          'gagesII_9322_sept30_2011.shp')
+gages = gpd.read_file(gages_file)
 
 # Get data just from the state of Arizona
 gages_AZ = gages[gages['STATE'] == 'AZ']
@@ -76,12 +73,10 @@ plt.show()
 # https://www.usgs.gov/core-science-systems/ngp/national-hydrography/access-national-hydrography-products
 # https://viewer.nationalmap.gov/basic/?basemap=b1&category=nhd&title=NHD%20View
 
-
 # Example reading in a geodataframe
 file = os.path.join('Map_Data', 'WBD_15_HU2_GDB', 'WBD_15_HU2_GDB.gdb')
 fiona.listlayers(file)
 HUC4 = gpd.read_file(file, layer="WBDHU4")
-
 
 # Check the type and see the list of layers
 # Isolate HUC4 basin of interest (Salt River, includes verde)
@@ -122,10 +117,6 @@ file = os.path.join('Map_Data', 'Major_Rivers', 'Major_Rivers.shp')
 rivers = gpd.read_file(file)
 
 # %%
-# Some words on projections
-# Lesson 2
-# https://www.earthdatascience.org/courses/use-data-open-source-python/intro-vector-data-python/spatial-data-vector-shapefiles/intro-to-coordinate-reference-systems-python/
-
 # Note this is a different projection system than the stream gauges
 # CRS = Coordinate Reference System
 saltverde.crs
@@ -135,9 +126,6 @@ rivers.crs
 # The points won't show up in AZ because they are in a different projection
 # We need to project them first
 # points_project = point_df.to_crs(gages_AZ.crs)
-
-# NOTE: .to_crs() will only work if your original spatial object has a CRS
-# assigned to it AND if that CRS is the correct CRS!
 
 # Now put it all together on one plot, clip to limit extent to Salt River
 gages_project = gages_AZ.to_crs(saltverde.crs)
