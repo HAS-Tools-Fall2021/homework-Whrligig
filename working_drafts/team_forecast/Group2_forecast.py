@@ -1,5 +1,5 @@
 # @Date:   2021-11-11T14:10:37-07:00
-# @Last modified time: 2021-11-11T14:45:05-07:00
+# @Last modified time: 2021-11-11T14:48:29-07:00
 
 
 
@@ -55,12 +55,6 @@ gages_AZ.shape
 gages_AZ.head()
 
 # Plot our subset
-fig, ax = plt.subplots(figsize=(10, 10))
-gages_AZ.plot(ax=ax)
-plt.show()
-
-# %%
-# Could plot by some other variable:
 fig, ax = plt.subplots(figsize=(10, 10))
 gages_AZ.plot(column='DRAIN_SQKM', categorical=False,
               legend=True, markersize=45, cmap='cividis',
@@ -141,20 +135,6 @@ gages_project = gages_AZ.to_crs(saltverde.crs)
 gages_project = gpd.clip(gages_project, saltverde)
 river_project = rivers.to_crs(saltverde.crs)
 river_project = gpd.clip(river_project, saltverde)
-
-# %%
-# Now plot again
-fig, ax = plt.subplots(figsize=(5, 5))
-gages_project.plot(column='DRAIN_SQKM', categorical=False,
-                   legend=True, markersize=25, cmap='cividis',
-                   ax=ax)
-river_project.plot(ax=ax, color='blue')
-point_df.plot(ax=ax, color='crimson')
-saltverde.boundary.plot(ax=ax, color=None,
-                        edgecolor='black', linewidth=1)
-ax.set(title="Salt River Basin", xlabel="Longitude",
-       ylabel="Latitude")
-plt.show()
 
 # %%
 # Adding a basemap:
