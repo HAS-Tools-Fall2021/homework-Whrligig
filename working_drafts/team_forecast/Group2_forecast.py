@@ -2,18 +2,18 @@
 # @Last modified time: 2021-11-11T14:48:29-07:00
 
 # %%
-
 import os
 import pandas as pd
 import numpy as np
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
+# import cartopy.crs as ccrs
+# import cartopy.feature as cfeature
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import geopandas as gpd
 import fiona
 import contextily as ctx
+import xarray as xr
 import shapely
 from shapely.geometry import Point
 from netCDF4 import Dataset
@@ -39,6 +39,80 @@ flow_data = pd.read_table(flow_url, sep='\t', skiprows=30,
                                  'code'], parse_dates=['datetime'],
                           index_col=['datetime'])
 
+# %% Read in, plot NetCDF data
+# NCEP Precip Data - will need to adjust path
+data_path = os.path.join('1989_2021_NCEP_PrecipRate_Data.nc')
+precip = xr.open_dataset(data_path)
+precip
+
+# 2 lat values, 2 lon values, 11993 time values
+precip['prate']['lat'].size
+precip['prate']['lon'].size
+precip["prate"]["time"].size
+
+# Extract single point, convert it to dataframe to make time series
+# Extract years, days, months from datetime index to allow for resampling
+# Index 0,0 closest to stream gauge
+lat = precip["prate"]["lat"].values[0]
+lon = precip["prate"]["lon"].values[0]
+point_precip = precip["prate"].sel(lat=lat, lon=lon)
+precip_df = point_precip.to_dataframe()
+precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
+precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
+precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
+
+# Resample the data to find, plot mean values for month of November
+nov_precip = precip_df[precip_df['month'] == 11]
+nov_pmean = nov_precip.groupby('day')['prate'].mean()
+f, ax = plt.subplots(figsize=(12, 6))
+nov_pmean.plot.line(marker="o",
+                   ax=ax,
+                   color="lightgray",
+                   markerfacecolor="steelblue",
+                   markeredgecolor="steelblue")
+ax.set(title="November Mean Precipitation For Gauge Location",
+       xlabel="Day of the Month",
+       ylabel="Precp Rate (kg/m^2)")
+
+# %%
+# Now work with NetCDF temperature data - adjust data path first
+data_path = os.path.join('temperature.nc')
+temp = xr.open_dataset(data_path)
+temp
+
+# 2 lat values, 2 lon values, 11993 time values
+temp['air']['lat'].size
+temp['air']['lon'].size
+temp["air"]["time"].size
+
+# Extract single point, convert it to dataframe to make time series
+# Extract years, days, months from datetime index to allow for resampling
+# Index 0,0 closest to stream gauge
+lat = temp["air"]["lat"].values[0]
+lon = temp["air"]["lon"].values[0]
+point_temp = temp["air"].sel(lat=lat, lon=lon)
+temp_df = point_temp.to_dataframe()
+temp_df['year'] = pd.DatetimeIndex(temp_df.index).year
+temp_df['month'] = pd.DatetimeIndex(temp_df.index).month
+temp_df['day'] = pd.DatetimeIndex(temp_df.index).day
+
+# Resample the data to find, plot mean values for month of November
+nov_temp = temp_df[temp_df['month'] == 11]
+nov_tmean = nov_temp.groupby('day')['air'].mean()
+f, ax = plt.subplots(figsize=(12, 6))
+nov_tmean.plot.line(marker="o",
+                   ax=ax,
+                   color="lightgray",
+                   markerfacecolor="steelblue",
+                   markeredgecolor="steelblue")
+ax.set(title="November Mean Temperature For Gauge Location",
+       xlabel="Day of the Month",
+       ylabel="Temperature(K)")
+
+# Extract precip values as a numpy array for spatial plotting
+precip_val = precip["prate"].values
+precip_val.shape
+type(precip_val)
 # %%
 # Mapping section - feel free to tinker with
 # Lesson 1 from Earth Data Science:
