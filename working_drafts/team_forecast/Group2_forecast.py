@@ -2,29 +2,34 @@
 # @Last modified time: 2021-11-11T14:48:29-07:00
 
 # %%
-
 import os
 import pandas as pd
 import numpy as np
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
+# import cartopy.crs as ccrs
+# import cartopy.feature as cfeature
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import geopandas as gpd
 import fiona
 import contextily as ctx
+import xarray as xr
 import shapely
 from shapely.geometry import Point
 from netCDF4 import Dataset
 
-
-
 # Our Plan:
-# Data
-# Map
-# Graphs
-# Forecast Numbers
+
+# Linear regression -- Xingyu (Use middle 10 years,
+# then use most recent 10 years for regression)
+       # Air temp regression with precip rate
+       # Precip regression with streamflow
+# Adding in precip netcdf, Air Temp netcdf,
+       # combining in one dataframe -- Connal
+# Add chart of previous week's flow -- Connal
+# Add function (tie to regression in some way, likely w/ a graph) -- Steph
+# Add Map -- Andrew
+# Add timeseries plots of netcdf, spatial means of November -- Andrew
 
 flow_url = "https://waterdata.usgs.gov/nwis/dv?cb_00060=on&format=rdb" \
            "&site_no=09506000&referred_module=sw" \
@@ -34,14 +39,80 @@ flow_data = pd.read_table(flow_url, sep='\t', skiprows=30,
                                  'code'], parse_dates=['datetime'],
                           index_col=['datetime'])
 
+# %% Read in, plot NetCDF data
+# NCEP Precip Data - will need to adjust path
+data_path = os.path.join('1989_2021_NCEP_PrecipRate_Data.nc')
+precip = xr.open_dataset(data_path)
+precip
 
-# Linear regression
-# precip netcdf, evapotrans cdf, compare to streamflow
-# Add air temperature data
-       # Air temp regression with precip rate
-       # Precip regression with streamflow
-# Use middle 10 years, then use most recent 10 years for regression
+# 2 lat values, 2 lon values, 11993 time values
+precip['prate']['lat'].size
+precip['prate']['lon'].size
+precip["prate"]["time"].size
 
+# Extract single point, convert it to dataframe to make time series
+# Extract years, days, months from datetime index to allow for resampling
+# Index 0,0 closest to stream gauge
+lat = precip["prate"]["lat"].values[0]
+lon = precip["prate"]["lon"].values[0]
+point_precip = precip["prate"].sel(lat=lat, lon=lon)
+precip_df = point_precip.to_dataframe()
+precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
+precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
+precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
+
+# Resample the data to find, plot mean values for month of November
+nov_precip = precip_df[precip_df['month'] == 11]
+nov_pmean = nov_precip.groupby('day')['prate'].mean()
+f, ax = plt.subplots(figsize=(12, 6))
+nov_pmean.plot.line(marker="o",
+                   ax=ax,
+                   color="lightgray",
+                   markerfacecolor="steelblue",
+                   markeredgecolor="steelblue")
+ax.set(title="November Mean Precipitation For Gauge Location",
+       xlabel="Day of the Month",
+       ylabel="Precp Rate (kg/m^2)")
+
+# %%
+# Now work with NetCDF temperature data - adjust data path first
+data_path = os.path.join('temperature.nc')
+temp = xr.open_dataset(data_path)
+temp
+
+# 2 lat values, 2 lon values, 11993 time values
+temp['air']['lat'].size
+temp['air']['lon'].size
+temp["air"]["time"].size
+
+# Extract single point, convert it to dataframe to make time series
+# Extract years, days, months from datetime index to allow for resampling
+# Index 0,0 closest to stream gauge
+lat = temp["air"]["lat"].values[0]
+lon = temp["air"]["lon"].values[0]
+point_temp = temp["air"].sel(lat=lat, lon=lon)
+temp_df = point_temp.to_dataframe()
+temp_df['year'] = pd.DatetimeIndex(temp_df.index).year
+temp_df['month'] = pd.DatetimeIndex(temp_df.index).month
+temp_df['day'] = pd.DatetimeIndex(temp_df.index).day
+
+# Resample the data to find, plot mean values for month of November
+nov_temp = temp_df[temp_df['month'] == 11]
+nov_tmean = nov_temp.groupby('day')['air'].mean()
+f, ax = plt.subplots(figsize=(12, 6))
+nov_tmean.plot.line(marker="o",
+                   ax=ax,
+                   color="lightgray",
+                   markerfacecolor="steelblue",
+                   markeredgecolor="steelblue")
+ax.set(title="November Mean Temperature For Gauge Location",
+       xlabel="Day of the Month",
+       ylabel="Temperature(K)")
+
+# Extract precip values as a numpy array for spatial plotting
+precip_val = precip["prate"].values
+precip_val.shape
+type(precip_val)
 # %%
 # Mapping section - feel free to tinker with
 # Lesson 1 from Earth Data Science:
@@ -54,9 +125,9 @@ flow_data = pd.read_table(flow_url, sep='\t', skiprows=30,
 # https://water.usgs.gov/GIS/metadata/usgswrd/XML/gagesII_Sept2011.xml#stdorder
 
 # Reading it using geopandas
-file = os.path.join('Map_Data', 'gagesII_9322_point_shapefile',
-                    'gagesII_9322_sept30_2011.shp')
-gages = gpd.read_file(file)
+gages_file = os.path.join('..', 'data', 'Shapefiles',
+                          'gagesII_9322_sept30_2011.shp')
+gages = gpd.read_file(gages_file)
 
 # Get data just from the state of Arizona
 gages_AZ = gages[gages['STATE'] == 'AZ']
@@ -76,12 +147,10 @@ plt.show()
 # https://www.usgs.gov/core-science-systems/ngp/national-hydrography/access-national-hydrography-products
 # https://viewer.nationalmap.gov/basic/?basemap=b1&category=nhd&title=NHD%20View
 
-
 # Example reading in a geodataframe
 file = os.path.join('Map_Data', 'WBD_15_HU2_GDB', 'WBD_15_HU2_GDB.gdb')
 fiona.listlayers(file)
 HUC4 = gpd.read_file(file, layer="WBDHU4")
-
 
 # Check the type and see the list of layers
 # Isolate HUC4 basin of interest (Salt River, includes verde)
@@ -122,10 +191,6 @@ file = os.path.join('Map_Data', 'Major_Rivers', 'Major_Rivers.shp')
 rivers = gpd.read_file(file)
 
 # %%
-# Some words on projections
-# Lesson 2
-# https://www.earthdatascience.org/courses/use-data-open-source-python/intro-vector-data-python/spatial-data-vector-shapefiles/intro-to-coordinate-reference-systems-python/
-
 # Note this is a different projection system than the stream gauges
 # CRS = Coordinate Reference System
 saltverde.crs
@@ -135,9 +200,6 @@ rivers.crs
 # The points won't show up in AZ because they are in a different projection
 # We need to project them first
 # points_project = point_df.to_crs(gages_AZ.crs)
-
-# NOTE: .to_crs() will only work if your original spatial object has a CRS
-# assigned to it AND if that CRS is the correct CRS!
 
 # Now put it all together on one plot, clip to limit extent to Salt River
 gages_project = gages_AZ.to_crs(saltverde.crs)
