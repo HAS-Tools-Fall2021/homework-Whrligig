@@ -17,7 +17,9 @@ import xarray as xr
 import shapely
 from shapely.geometry import Point
 from netCDF4 import Dataset
+import datetime
 
+# %%
 # Our Plan:
 
 # Linear regression -- Xingyu (Use middle 10 years,
@@ -33,19 +35,21 @@ from netCDF4 import Dataset
 
 flow_url = "https://waterdata.usgs.gov/nwis/dv?cb_00060=on&format=rdb" \
            "&site_no=09506000&referred_module=sw" \
-           "&period=&begin_date=1989-01-01&end_date=2021-11-06"
+           "&period=&begin_date=1989-01-01&end_date=2021-11-13"
 flow_data = pd.read_table(flow_url, sep='\t', skiprows=30,
                           names=['agency_cd', 'site_no', 'datetime', 'flow',
                                  'code'], parse_dates=['datetime'],
                           index_col=['datetime'])
 
-# %% Read in, plot NetCDF data
-# NCEP Precip Data - will need to adjust path
-data_path = os.path.join('1989_2021_NCEP_PrecipRate_Data.nc')
-precip = xr.open_dataset(data_path)
+# %% 
+# Read in NetCDF Precipitation Data
+precip_path = os.path.join('..', 'data', 'Hierarchical_Data',
+                           '1989_2021_NCEP_PrecipRate_Data.nc')
+precip = xr.open_dataset(precip_path)
 precip
 
-# 2 lat values, 2 lon values, 11993 time values
+# Find size of NetCDF precip data
+# (2 lat values, 2 lon values, 11993 time values)
 precip['prate']['lat'].size
 precip['prate']['lon'].size
 precip["prate"]["time"].size
@@ -61,26 +65,28 @@ precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
 precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
 precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
 
-# Resample the data to find, plot mean values for month of November
+# Resample the data to find and plot mean values for month of November
 nov_precip = precip_df[precip_df['month'] == 11]
 nov_pmean = nov_precip.groupby('day')['prate'].mean()
 f, ax = plt.subplots(figsize=(12, 6))
 nov_pmean.plot.line(marker="o",
-                   ax=ax,
-                   color="lightgray",
-                   markerfacecolor="steelblue",
-                   markeredgecolor="steelblue")
+                    ax=ax,
+                    color="lightgray",
+                    markerfacecolor="steelblue",
+                    markeredgecolor="steelblue")
 ax.set(title="November Mean Precipitation For Gauge Location",
        xlabel="Day of the Month",
        ylabel="Precp Rate (kg/m^2)")
 
 # %%
-# Now work with NetCDF temperature data - adjust data path first
-data_path = os.path.join('temperature.nc')
+# Read in NetCDF temperature data
+data_path = os.path.join('..', 'data', 'Hierarchical_Data',
+                         '2000_2019_NMC_AirTemp.nc')
 temp = xr.open_dataset(data_path)
 temp
 
-# 2 lat values, 2 lon values, 11993 time values
+# Find size of NetCDF precip data
+# (2 lat values, 2 lon values, 11993 time values)
 temp['air']['lat'].size
 temp['air']['lon'].size
 temp["air"]["time"].size
@@ -96,15 +102,15 @@ temp_df['year'] = pd.DatetimeIndex(temp_df.index).year
 temp_df['month'] = pd.DatetimeIndex(temp_df.index).month
 temp_df['day'] = pd.DatetimeIndex(temp_df.index).day
 
-# Resample the data to find, plot mean values for month of November
+# Resample the data to find and plot mean values for month of November
 nov_temp = temp_df[temp_df['month'] == 11]
 nov_tmean = nov_temp.groupby('day')['air'].mean()
 f, ax = plt.subplots(figsize=(12, 6))
 nov_tmean.plot.line(marker="o",
-                   ax=ax,
-                   color="lightgray",
-                   markerfacecolor="steelblue",
-                   markeredgecolor="steelblue")
+                    ax=ax,
+                    color="lightgray",
+                    markerfacecolor="steelblue",
+                    markeredgecolor="steelblue")
 ax.set(title="November Mean Temperature For Gauge Location",
        xlabel="Day of the Month",
        ylabel="Temperature(K)")
@@ -113,16 +119,28 @@ ax.set(title="November Mean Temperature For Gauge Location",
 precip_val = precip["prate"].values
 precip_val.shape
 type(precip_val)
+
+# %%
+# Add in plot of streamflow behavior during last forecast period
+date_format = mdates.DateFormatter("%m/%d")
+fig, ax = plt.subplots()
+ax.plot(flow_data['flow'], label='Daily Flow', marker='o',
+        color='darkturquoise')
+ax.set(title="Observed Flow for Week 11/07/21 - 11/13/21", xlabel="Date",
+       ylabel="Flow [cfs]", ylim=[0, 250],
+       xlim=[datetime.date(2021, 11, 7), datetime.date(2021, 11, 13)])
+ax.xaxis.set_major_formatter(date_format)
+ax.grid(None, 'major', 'both', alpha=0.15)
+ax.legend(loc='lower right')
+fig.set(facecolor='lightgrey')
+plt.show()
+
 # %%
 # Mapping section - feel free to tinker with
 # Lesson 1 from Earth Data Science:
 # https://www.earthdatascience.org/courses/use-data-open-source-python/intro-vector-data-python/spatial-data-vector-shapefiles/
 # Vector data comes in 3 forms:
 #       - point, line and polygon
-
-#  Gauges II USGS stream gauge dataset:
-# Download here:
-# https://water.usgs.gov/GIS/metadata/usgswrd/XML/gagesII_Sept2011.xml#stdorder
 
 # Reading it using geopandas
 gages_file = os.path.join('..', 'data', 'Shapefiles',
@@ -134,7 +152,7 @@ gages_AZ = gages[gages['STATE'] == 'AZ']
 gages_AZ.shape
 gages_AZ.head()
 
-# Plot our subset
+# Plot our subset gages drainage area
 fig, ax = plt.subplots(figsize=(10, 10))
 gages_AZ.plot(column='DRAIN_SQKM', categorical=False,
               legend=True, markersize=45, cmap='cividis',
