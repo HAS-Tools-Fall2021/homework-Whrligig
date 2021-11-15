@@ -21,7 +21,8 @@ from sklearn.linear_model import LinearRegression
 # %%
 # Our Plan:
 
-# Linear regression -- Xingyu (Use the recent 1 year data)
+# Linear regression -- Xingyu (Use middle 10 years,
+# then use most recent 10 years for regression)
        # Air temp regression with precip rate
        # Precip regression with streamflow
 # Adding in precip netcdf, Air Temp netcdf -- Connal
@@ -102,7 +103,7 @@ flow_data = flow_data[:-2]
 nov_flow = flow_data[flow_data['month'] == 11]
 # %%
 # Read in NetCDF Precipitation Data
-precip_path = os.path.join('..', 'data', 'Hierarchical_Data',
+precip_path = os.path.join('..', '..', 'working_drafts', 'data', 'Hierarchical_Data',
                            '1989_2021_NCEP_PrecipRate_Data_v4.nc')
 precip = xr.open_dataset(precip_path)
 precip
@@ -143,9 +144,9 @@ fig.savefig('Nov_precip.jpg', dpi=300, bbox_inches='tight')
 
 # %%
 # Read in NetCDF temperature data
-data_path = os.path.join('..', 'data', 'Hierarchical_Data',
+temp_path = os.path.join('..', '..', 'working_drafts', 'data', 'Hierarchical_Data',
                          '1989_2021_NCEP_AirTemp_Data.nc')
-temp = xr.open_dataset(data_path)
+temp = xr.open_dataset(temp_path)
 temp
 
 # Find size of NetCDF precip data
@@ -210,11 +211,11 @@ fig.savefig('last_week_stream_flow.jpg', dpi=300, bbox_inches='tight')
 
 # %%
 fig = Monthly_ObservedFlow(2005, 2021, 11, 1, 31)
-fig.savefig('Nov_log_obs', dpi=300, bbox_inches='tight')
+fig.savefig('Nov_log_obs.jpg', dpi=300, bbox_inches='tight')
 
 # %%
 # Reading in gage data using geopandas
-gages_file = os.path.join('..', 'data', 'Shapefiles_and_GDBs',
+gages_file = os.path.join('..', '..', 'working_drafts', 'data', 'Shapefiles_and_GDBs',
                           'gagesII_9322_sept30_2011.shp')
 gages = gpd.read_file(gages_file)
 
@@ -234,7 +235,7 @@ plt.show()
 
 # %%
 # Read in watershed boundary shapefile
-HUC_file = os.path.join('..', 'data', 'Shapefiles_and_GDBs',
+HUC_file = os.path.join('..', '..', 'working_drafts', 'data', 'Shapefiles_and_GDBs',
                         'NHD_H_15060202_HU8_GDB.gdb')
 fiona.listlayers(HUC_file)
 HUC4 = gpd.read_file(HUC_file, layer="WBDHU4")
@@ -277,7 +278,7 @@ fig.set(facecolor='lightgrey')
 plt.show()
 
 # %%
-river_file = os.path.join('..', 'data', 'Shapefiles_and_GDBs',
+river_file = os.path.join('..', '..', 'working_drafts', 'data', 'Shapefiles_and_GDBs',
                           'UAiR_Major_Rivers.shp')
 rivers = gpd.read_file(river_file)
 
@@ -314,6 +315,7 @@ ctx.add_basemap(ax, crs=saltverde.crs)
 ax.legend()
 fig.set(facecolor='white')
 plt.show()
+fig.savefig('Watershed_map.jpg', dpi=300, bbox_inches='tight')
 
 # %%
 # Regression and forecast
