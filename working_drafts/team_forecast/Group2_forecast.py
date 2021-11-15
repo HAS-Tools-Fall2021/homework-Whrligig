@@ -17,15 +17,16 @@ import xarray as xr
 import shapely
 from shapely.geometry import Point
 from netCDF4 import Dataset
+import datetime
 
+# %%
 # Our Plan:
 
 # Linear regression -- Xingyu (Use middle 10 years,
 # then use most recent 10 years for regression)
        # Air temp regression with precip rate
        # Precip regression with streamflow
-# Adding in precip netcdf, Air Temp netcdf,
-       # combining in one dataframe -- Connal
+# Adding in precip netcdf, Air Temp netcdf -- Connal
 # Add chart of previous week's flow -- Connal
 # Add function (tie to regression in some way, likely w/ a graph) -- Steph
 # Add Map -- Andrew
@@ -33,19 +34,21 @@ from netCDF4 import Dataset
 
 flow_url = "https://waterdata.usgs.gov/nwis/dv?cb_00060=on&format=rdb" \
            "&site_no=09506000&referred_module=sw" \
-           "&period=&begin_date=1989-01-01&end_date=2021-11-06"
+           "&period=&begin_date=1989-01-01&end_date=2021-11-13"
 flow_data = pd.read_table(flow_url, sep='\t', skiprows=30,
                           names=['agency_cd', 'site_no', 'datetime', 'flow',
                                  'code'], parse_dates=['datetime'],
                           index_col=['datetime'])
 
-# %% Read in, plot NetCDF data
-# NCEP Precip Data - will need to adjust path
-data_path = os.path.join('1989_2021_NCEP_PrecipRate_Data.nc')
-precip = xr.open_dataset(data_path)
+# %% 
+# Read in NetCDF Precipitation Data
+precip_path = os.path.join('..', 'data', 'Hierarchical_Data',
+                           '1989_2021_NCEP_PrecipRate_Data.nc')
+precip = xr.open_dataset(precip_path)
 precip
 
-# 2 lat values, 2 lon values, 11993 time values
+# Find size of NetCDF precip data
+# (2 lat values, 2 lon values, 11993 time values)
 precip['prate']['lat'].size
 precip['prate']['lon'].size
 precip["prate"]["time"].size
@@ -61,26 +64,28 @@ precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
 precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
 precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
 
-# Resample the data to find, plot mean values for month of November
+# Resample the data to find and plot mean values for month of November
 nov_precip = precip_df[precip_df['month'] == 11]
 nov_pmean = nov_precip.groupby('day')['prate'].mean()
 f, ax = plt.subplots(figsize=(12, 6))
 nov_pmean.plot.line(marker="o",
-                   ax=ax,
-                   color="lightgray",
-                   markerfacecolor="steelblue",
-                   markeredgecolor="steelblue")
+                    ax=ax,
+                    color="lightgray",
+                    markerfacecolor="steelblue",
+                    markeredgecolor="steelblue")
 ax.set(title="November Mean Precipitation For Gauge Location",
        xlabel="Day of the Month",
        ylabel="Precp Rate (kg/m^2)")
 
 # %%
-# Now work with NetCDF temperature data - adjust data path first
-data_path = os.path.join('temperature.nc')
+# Read in NetCDF temperature data
+data_path = os.path.join('..', 'data', 'Hierarchical_Data',
+                         '2000_2019_NMC_AirTemp.nc')
 temp = xr.open_dataset(data_path)
 temp
 
-# 2 lat values, 2 lon values, 11993 time values
+# Find size of NetCDF precip data
+# (2 lat values, 2 lon values, 11993 time values)
 temp['air']['lat'].size
 temp['air']['lon'].size
 temp["air"]["time"].size
@@ -96,36 +101,45 @@ temp_df['year'] = pd.DatetimeIndex(temp_df.index).year
 temp_df['month'] = pd.DatetimeIndex(temp_df.index).month
 temp_df['day'] = pd.DatetimeIndex(temp_df.index).day
 
-# Resample the data to find, plot mean values for month of November
+# Resample the data to find and plot mean values for month of November
 nov_temp = temp_df[temp_df['month'] == 11]
 nov_tmean = nov_temp.groupby('day')['air'].mean()
-f, ax = plt.subplots(figsize=(12, 6))
+fig, ax = plt.subplots(figsize=(12, 6))
 nov_tmean.plot.line(marker="o",
-                   ax=ax,
-                   color="lightgray",
-                   markerfacecolor="steelblue",
-                   markeredgecolor="steelblue")
+                    ax=ax,
+                    color="lightgray",
+                    markerfacecolor="steelblue",
+                    markeredgecolor="steelblue")
 ax.set(title="November Mean Temperature For Gauge Location",
        xlabel="Day of the Month",
        ylabel="Temperature(K)")
+fig.set(facecolor='lightgrey')
+plt.show()
+
 
 # Extract precip values as a numpy array for spatial plotting
 precip_val = precip["prate"].values
 precip_val.shape
 type(precip_val)
+
 # %%
-# Mapping section - feel free to tinker with
-# Lesson 1 from Earth Data Science:
-# https://www.earthdatascience.org/courses/use-data-open-source-python/intro-vector-data-python/spatial-data-vector-shapefiles/
-# Vector data comes in 3 forms:
-#       - point, line and polygon
+# Add in plot of streamflow behavior during last forecast period
+date_format = mdates.DateFormatter("%m/%d")
+fig, ax = plt.subplots()
+ax.plot(flow_data['flow'], label='Daily Flow', marker='o',
+        color='darkturquoise')
+ax.set(title="Observed Flow for Week 11/07/21 - 11/13/21", xlabel="Date",
+       ylabel="Flow [cfs]", ylim=[0, 250],
+       xlim=[datetime.date(2021, 11, 7), datetime.date(2021, 11, 13)])
+ax.xaxis.set_major_formatter(date_format)
+ax.grid(None, 'major', 'both', alpha=0.15)
+ax.legend(loc='lower right')
+fig.set(facecolor='lightgrey')
+plt.show()
 
-#  Gauges II USGS stream gauge dataset:
-# Download here:
-# https://water.usgs.gov/GIS/metadata/usgswrd/XML/gagesII_Sept2011.xml#stdorder
-
-# Reading it using geopandas
-gages_file = os.path.join('..', 'data', 'Shapefiles',
+# %%
+# Reading in gage data using geopandas
+gages_file = os.path.join('..', 'data', 'Shapefiles_and_GDBs',
                           'gagesII_9322_sept30_2011.shp')
 gages = gpd.read_file(gages_file)
 
@@ -134,23 +148,21 @@ gages_AZ = gages[gages['STATE'] == 'AZ']
 gages_AZ.shape
 gages_AZ.head()
 
-# Plot our subset
+# Plot drainage area of each gage in AZ
 fig, ax = plt.subplots(figsize=(10, 10))
 gages_AZ.plot(column='DRAIN_SQKM', categorical=False,
               legend=True, markersize=45, cmap='cividis',
               ax=ax)
 ax.set_title("Arizona stream gauge drainge area\n (sq km)")
+fig.set(facecolor='lightgrey')
 plt.show()
 
 # %%
-# Now look for other datasets here:
-# https://www.usgs.gov/core-science-systems/ngp/national-hydrography/access-national-hydrography-products
-# https://viewer.nationalmap.gov/basic/?basemap=b1&category=nhd&title=NHD%20View
-
-# Example reading in a geodataframe
-file = os.path.join('Map_Data', 'WBD_15_HU2_GDB', 'WBD_15_HU2_GDB.gdb')
-fiona.listlayers(file)
-HUC4 = gpd.read_file(file, layer="WBDHU4")
+# Read in watershed boundary shapefile
+HUC_file = os.path.join('..', 'data', 'Shapefiles_and_GDBs',
+                        'NHD_H_15060202_HU8_GDB.gdb')
+fiona.listlayers(HUC_file)
+HUC4 = gpd.read_file(HUC_file, layer="WBDHU4")
 
 # Check the type and see the list of layers
 # Isolate HUC4 basin of interest (Salt River, includes verde)
@@ -160,7 +172,7 @@ HUC4 = HUC4.set_index('name')
 saltverde = HUC4.loc[['Salt']]
 
 # %%
-# Add some points corresponding with those used in forecast
+# Add some points corresponding with those used in forecast (what are PSR, FGZ?)
 # PSR: 34.6501, -112.4283
 # FGZ: 35.1403, -111.6710
 # Daymet Data:  34.5582, -111.8591
@@ -180,15 +192,19 @@ point_df = gpd.GeoDataFrame(point_geom, columns=['geometry'],
 # Plot these on the first dataset, one layer at a time
 fig, ax = plt.subplots(figsize=(10, 10))
 saltverde.plot(ax=ax)
-point_df.plot(ax=ax, color='crimson')
+point_df.plot(ax=ax, color='crimson', label='Important Sites in Watershed')
+saltverde.boundary.plot(ax=ax, color=None,
+                        edgecolor='black', linewidth=1,
+                        label='Salt River Watershed Extent')
 ax.set_title("Salt River HUC4 Boundaries")
+ax.legend()
+fig.set(facecolor='lightgrey')
 plt.show()
 
 # %%
-# Get Arizona River data from
-# https://uair.library.arizona.edu/item/292543/browse-data/Water
-file = os.path.join('Map_Data', 'Major_Rivers', 'Major_Rivers.shp')
-rivers = gpd.read_file(file)
+river_file = os.path.join('..', 'data', 'Shapefiles_and_GDBs',
+                          'UAiR_Major_Rivers.shp')
+rivers = gpd.read_file(river_file)
 
 # %%
 # Note this is a different projection system than the stream gauges
@@ -207,11 +223,6 @@ gages_project = gpd.clip(gages_project, saltverde)
 river_project = rivers.to_crs(saltverde.crs)
 river_project = gpd.clip(river_project, saltverde)
 
-# %%
-# Adding a basemap:
-# Some other basemap choices:
-#  https://towardsdatascience.com/free-base-maps-for-static-maps-using-geopandas-and-contextily-cd4844ff82e1
-
 # Now plot again
 fig, ax = plt.subplots(figsize=(10, 10))
 gages_project.plot(column='DRAIN_SQKM', categorical=False,
@@ -226,5 +237,5 @@ ax.set(title="Salt River Basin Drainage (km^2)", xlabel="Longitude",
        ylabel="Latitude")
 ctx.add_basemap(ax, crs=saltverde.crs)
 ax.legend()
+fig.set(facecolor='lightgrey')
 plt.show()
-fig.savefig('streamflow_map.png')
