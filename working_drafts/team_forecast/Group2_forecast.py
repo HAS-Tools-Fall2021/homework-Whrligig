@@ -43,11 +43,11 @@ flow_data['month'] = pd.DatetimeIndex(flow_data.index).month
 flow_data['day'] = pd.DatetimeIndex(flow_data.index).day
 flow_data['year'] = pd.DatetimeIndex(flow_data.index).year
 
-
+# %%
 ## Xingyu
-#flow_w=flow_data.resample('W').mean()
-flow_y=flow_data.resample('Y').mean()
-flow_w=flow_data
+# flow_w=flow_data.resample('W').mean()
+flow_y = flow_data.resample('Y').mean()
+flow_w = flow_data
 flow_w['month'] = pd.DatetimeIndex(flow_w.index).month
 flow_w['day'] = pd.DatetimeIndex(flow_w.index).day
 # Resample the data to find and plot mean values for month of November
@@ -66,10 +66,11 @@ ax.set(title="November flow",
        ylabel="flow (kg/m^2)")
 
 
-####because in 2004, the flow is extremely high. The data before 2004 can not use 
-flow_data.drop(flow_data[flow_data['year']<2005].index,inplace=True)
+# Because in 2004, the flow is extremely high, cannot use the data before 2004 
+flow_data.drop(flow_data[flow_data['year'] < 2005].index, inplace=True)
 nov_flow = flow_data[flow_data['month'] == 11]
-# %% 
+
+# %%
 # Read in NetCDF Precipitation Data
 precip_path = os.path.join('..', 'data', 'Hierarchical_Data',
                            '1989_2021_NCEP_PrecipRate_Data_v2.nc')
@@ -92,7 +93,7 @@ precip_df = point_precip.to_dataframe()
 precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
 precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
 precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
-precip_df.drop(precip_df[precip_df['year']<2005].index,inplace=True)
+precip_df.drop(precip_df[precip_df['year'] < 2005].index, inplace=True)
 
 # Resample the data to find and plot mean values for month of November
 nov_precip = precip_df[precip_df['month'] == 11]
@@ -145,7 +146,6 @@ ax.set(title="November Mean Temperature For Gauge Location",
        ylabel="Temperature(K)")
 fig.set(facecolor='lightgrey')
 plt.show()
-
 
 # Extract precip values as a numpy array for spatial plotting
 precip_val = precip["prate"].values
@@ -270,7 +270,7 @@ ax.legend()
 fig.set(facecolor='lightgrey')
 plt.show()
 
-#%%
+# %%
 # Function that provides the logarithmic flow values for a desired timeframe
 def Monthly_ObservedFlow(startyear, endyear, month, firstday, lastday):
        '''Variables:
