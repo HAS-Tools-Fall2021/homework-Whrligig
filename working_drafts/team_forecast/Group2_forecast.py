@@ -294,4 +294,7 @@ def Monthly_ObservedFlow(startyear, endyear, month, firstday, lastday):
        plt.show()
 
        return fig
-# %%
+
+#Use the function for the nov_flow time period
+Monthly_ObservedFlow(2005, 2021, 11, 1, 31)
+
