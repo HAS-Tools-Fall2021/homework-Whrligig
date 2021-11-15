@@ -27,9 +27,38 @@ from sklearn.linear_model import LinearRegression
        # Precip regression with streamflow
 # Adding in precip netcdf, Air Temp netcdf -- Connal
 # Add chart of previous week's flow -- Connal
-# Add function (tie to regression in some way, likely w/ a graph) -- Steph
+# Add function (log style of monthly streamflow) -- Steph
 # Add Map -- Andrew
 # Add timeseries plots of netcdf, spatial means of November -- Andrew
+
+# %%
+# Function that provides the logarithmic flow values for a desired timeframe
+
+
+def Monthly_ObservedFlow(startyear, endyear, month, firstday, lastday):
+       '''Variables:
+       flow_data: USGS Streamgage 09506000 daily streamflow data values
+       startyear: First year being viewed intimeseries
+       endyear: Final year being viewed in timeseries
+       month: Month being viewed in timeseries
+       firstday: First day of month
+       lastday: Last day of month'''
+
+       fig, ax = plt.subplots()
+       for x in range(startyear, endyear):
+              plot = flow_data[(flow_data.index.year == x) &
+                        (flow_data.index.month == month) &
+                        (flow_data.index.day >= firstday) &
+                        (flow_data.index.day <= lastday)]
+       ax.plot(plot.index.day, plot['flow'],
+                        label=x)
+       ax.set(title='Observed Flow',yscale='log', 
+              ylabel='Log Flow (cfs)', xlabel='Day in Month')
+       fig.set(facecolor='lightgrey')
+       plt.show()
+
+       return fig
+
 
 # Insert flow data
 flow_url = "https://waterdata.usgs.gov/nwis/dv?cb_00060=on&format=rdb" \
@@ -44,8 +73,8 @@ flow_data['day'] = pd.DatetimeIndex(flow_data.index).day
 flow_data['year'] = pd.DatetimeIndex(flow_data.index).year
 
 
-flow_y =flow_data.resample('Y').mean()
-flow_w =flow_data
+flow_y = flow_data.resample('Y').mean()
+flow_w = flow_data
 flow_w['month'] = pd.DatetimeIndex(flow_w.index).month
 flow_w['day'] = pd.DatetimeIndex(flow_w.index).day
 # Resample the data to find and plot mean values for month of November
@@ -59,9 +88,9 @@ nov_pmean.plot.line(marker="o",
                     color="lightgray",
                     markerfacecolor="steelblue",
                     markeredgecolor="steelblue")
-ax.set(title="November flow",
-       xlabel="average of each year",
-       ylabel="flow (kg/m^2)")
+ax.set(title="November Flow",
+       xlabel="Average of Each Year",
+       ylabel="Flow (kg/m^2)")
 fig.set(facecolor='lightgrey')
 plt.show()
 fig.savefig('Nov_flow.jpg', dpi=300, bbox_inches='tight')
@@ -95,7 +124,7 @@ precip_df = precip_df.groupby('time').mean()
 precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
 precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
 precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
-precip_df.drop(precip_df[precip_df['year']<2020].index,inplace=True)
+precip_df.drop(precip_df[precip_df['year'] < 2020].index, inplace=True)
 
 # Resample the data to find and plot mean values for month of November
 nov_precip = precip_df[precip_df['month'] == 11]
@@ -168,8 +197,8 @@ date_format = mdates.DateFormatter("%m/%d")
 fig, ax = plt.subplots()
 ax.plot(flow_data_2['flow'], label='Daily Flow', marker='o',
         color='lightgray',
-        markerfacecolor='darkturquoise',
-        markeredgecolor='darkturquoise')
+        markerfacecolor='steelblue',
+        markeredgecolor='steelblue')
 ax.set(title="Observed Flow for Week 11/05/21 - 11/11/21", xlabel="Date",
        ylabel="Flow [cfs]", ylim=[0, 250],
        xlim=[datetime.date(2021, 11, 5), datetime.date(2021, 11, 11)])
@@ -179,6 +208,10 @@ ax.legend(loc='lower right')
 fig.set(facecolor='lightgrey')
 plt.show()
 fig.savefig('last_week_stream_flow.jpg', dpi=300, bbox_inches='tight')
+
+# %%
+fig = Monthly_ObservedFlow(2005, 2021, 11, 1, 31)
+fig.savefig('Nov_log_obs', dpi=300, bbox_inches='tight')
 
 # %%
 # Reading in gage data using geopandas
@@ -334,35 +367,3 @@ fig.set(facecolor='lightgray')
 plt.show()
 
 fig.savefig('linear_regression.jpg', dpi=300, bbox_inches='tight')
-# %%
-# Function that provides the logarithmic flow values for a desired timeframe
-
-
-def Monthly_ObservedFlow(startyear, endyear, month, firstday, lastday):
-       '''Variables:
-       flow_data: USGS Streamgage 09506000 daily streamflow data values
-       startyear: First year being viewed intimeseries
-       endyear: Final year being viewed in timeseries
-       month: Month being viewed in timeseries
-       firstday: First day of month
-       lastday: Last day of month'''
-
-       fig, ax = plt.subplots()
-       for x in range(startyear, endyear):
-              plot = flow_data[(flow_data.index.year == x) &
-                        (flow_data.index.month == month) &
-                        (flow_data.index.day >= firstday) &
-                        (flow_data.index.day <= lastday)]
-       ax.plot(plot.index.day, plot['flow'],
-                        label=x)
-       ax.set(title='Observed Flow',yscale='log', 
-              ylabel='Log Flow (cfs)', xlabel='Day in Month')
-       fig.set(facecolor='lightgrey')
-       plt.show()
-
-       return fig
-
-
-# %%
-fig = Monthly_ObservedFlow(2005, 2021, 11, 1, 31)
-fig.savefig('Nov_log_obs', dpi=300, bbox_inches='tight')
