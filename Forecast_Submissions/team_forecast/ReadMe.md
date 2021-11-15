@@ -38,14 +38,18 @@ Data used in Forecast:
 
   ![picture 3](./Nov_temp.jpg)
 
-  Due to the high peak in flow in 2005, we could not use a long time series for our regression model. The linear regression algorithm could be overfitted if the sample time is too long, so years before 2020 were dropped from the analysis period. Although the latitude and longitude of precipitation and air temperature are different, we can make an average of the whole region (33-37N,246-250E). Streamflow, precipitation, and air temperature data were merged into one dataframe for use in the regression model. In addition, precipitation and air temperature data were normalized (minus mean and divided by standard deviation). Hierarchical data was then added to provide outside data that could potentially affect the streamflow values. The precipitation rates and air temperature near the Verde River Watershed were extracted from NetCDF files  using the NOAA PSL website and plotted on graphs. We then resampled the precipitation, air temperature, and flow data into weekly data and used this to train the regression model. The coefficient of determination was 0.64, showing that the model fitted well. In this way, the forecast = 156.1 and 134.9, respectively. A plot of the streamflow during the previous forecast period (November 7th, 2021 to November 13th, 2021) was also added to see what current trend is occurring at the stream gage. 
+  Due to the high peak in flow in 2005, we could not use a long time series for our regression model. The linear regression algorithm could be overfitted if the sample time is too long, so years before 2020 were dropped from the analysis period. Although the latitude and longitude of precipitation and air temperature are different, we can make an average of the whole region (33-37N,246-250E). Streamflow, precipitation, and air temperature data were merged into one dataframe for use in the regression model. In addition, precipitation and air temperature data were normalized (minus mean and divided by standard deviation). Hierarchical data was then added to provide outside data that could potentially affect the streamflow values. The precipitation rates and air temperature near the Verde River Watershed were extracted from NetCDF files  using the NOAA PSL website and plotted on graphs. We then resampled the precipitation, air temperature, and flow data into weekly data and used this to train the regression model. 
   
-  ![picture 4](./last_week_stream_flow.jpg) 
+  ![picture 4](./linear_regression.jpg)
+
+  The coefficient of determination was 0.64, showing that the model fitted well. In this way, the forecast = 156.1 and 134.9, respectively. A plot of the streamflow during the previous forecast period (November 7th, 2021 to November 13th, 2021) was also added to see what current trend is occurring at the stream gage. 
+  
+  ![picture 5](./last_week_stream_flow.jpg) 
 
   A map of the state of Arizona was also added to the code. This map plotted the state of Arizona, the Verde River/Salt River Boundaries, and important points in the state. 
   
-  ![picture 5](./linear_regression.jpg) 
+  ![picture 6](./Watershed_map.jpg)
 
   Finally, a logarithmic plot of the daily flow values for the month of November for whatever year was desired to be viewed was added in.
 
-   ![picture 6](./Nov_log_obs.jpg) 
+   ![picture 7](./Nov_log_obs.jpg) 

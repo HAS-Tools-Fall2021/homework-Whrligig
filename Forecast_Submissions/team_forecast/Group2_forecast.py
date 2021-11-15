@@ -315,6 +315,7 @@ ctx.add_basemap(ax, crs=saltverde.crs)
 ax.legend()
 fig.set(facecolor='white')
 plt.show()
+fig.savefig('Watershed_map.jpg', dpi=300, bbox_inches='tight')
 
 # %%
 # Regression and forecast
