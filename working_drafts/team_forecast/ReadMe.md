@@ -2,8 +2,8 @@
 ## Group 2 - Connal Boyd, Andrew Hoopes, Steph Serrano, Zhang Xingyu
 
 <<<<<<< HEAD
-1 Wk Forecast:156.1
 
+1 Wk Forecast:156.1
 2 Wk Forecast:134.9
 =======
 1) Week Forecast: **156.1**
