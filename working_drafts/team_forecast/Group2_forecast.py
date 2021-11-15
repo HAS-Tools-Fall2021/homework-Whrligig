@@ -44,8 +44,8 @@ flow_data['day'] = pd.DatetimeIndex(flow_data.index).day
 flow_data['year'] = pd.DatetimeIndex(flow_data.index).year
 
 
-flow_y=flow_data.resample('Y').mean()
-flow_w=flow_data
+flow_y =flow_data.resample('Y').mean()
+flow_w =flow_data
 flow_w['month'] = pd.DatetimeIndex(flow_w.index).month
 flow_w['day'] = pd.DatetimeIndex(flow_w.index).day
 # Resample the data to find and plot mean values for month of November
@@ -62,6 +62,7 @@ nov_pmean.plot.line(marker="o",
 ax.set(title="November flow",
        xlabel="average of each year",
        ylabel="flow (kg/m^2)")
+fig.set(facecolor='lightgrey')
 plt.show()
 fig.savefig('Nov_flow.jpg', dpi=300, bbox_inches='tight')
 
@@ -108,6 +109,7 @@ nov_pmean.plot.line(marker="o",
 ax.set(title="November Mean Precipitation For Gauge Location",
        xlabel="Day of the Month",
        ylabel="Precp Rate (kg/m^2)")
+fig.set(facecolor='lightgrey')
 plt.show()
 fig.savefig('Nov_precip.jpg', dpi=300, bbox_inches='tight')
 
@@ -165,7 +167,9 @@ type(precip_val)
 date_format = mdates.DateFormatter("%m/%d")
 fig, ax = plt.subplots()
 ax.plot(flow_data_2['flow'], label='Daily Flow', marker='o',
-        color='darkturquoise')
+        color='lightgray',
+        markerfacecolor='darkturquoise',
+        markeredgecolor='darkturquoise')
 ax.set(title="Observed Flow for Week 11/05/21 - 11/11/21", xlabel="Date",
        ylabel="Flow [cfs]", ylim=[0, 250],
        xlim=[datetime.date(2021, 11, 5), datetime.date(2021, 11, 11)])
@@ -276,7 +280,7 @@ ax.set(title="Salt River Basin Drainage (km^2)", xlabel="Longitude",
        ylabel="Latitude")
 ctx.add_basemap(ax, crs=saltverde.crs)
 ax.legend()
-fig.set(facecolor='lightgrey')
+fig.set(facecolor='white')
 plt.show()
 
 # %%
@@ -307,7 +311,7 @@ model.fit(x, y)
 r_sq = model.score(x, y)
 print('coefficient of determination:', np.round(r_sq, 2))
 
-#print the intercept and the slope
+# Print the intercept and the slope
 print('intercept:', np.round(model.intercept_, 2))
 print('slope:', np.round(model.coef_, 2))
 
@@ -317,18 +321,23 @@ print(" This week mean flow is ", round(prediction[0], 1))
 print(" This week mean flow is ", round(prediction[1], 1))
 #
 # %%
-# Line  plot comparison of predicted and observed flows
-fig, ax = plt.subplots(figsize=(20,4))
-ax.plot(flow_mean.index[1:], flow_mean['flow'][1:],color='blue', label='simulated 2 lag')
-ax.plot(flow_mean.index[1:], prediction,color='red', label='obs')
-ax.set(title="Linear regression flow results", xlabel="time", ylabel="Simulation with 2 lag (cfs)",
-       yscale='log', ylim=(0,15000))
+# Line plot comparison of predicted and observed flows
+fig, ax = plt.subplots(figsize=(20, 4))
+ax.plot(flow_mean.index[1:], flow_mean['flow'][1:], color='blue',
+        label='simulated 2 lag')
+ax.plot(flow_mean.index[1:], prediction, color='red', label='obs')
+ax.set(title="Linear regression flow results", xlabel="Time",
+       ylabel="Simulation with 2 lag (cfs)",
+       yscale='log', ylim=(0, 15000))
 ax.legend()
+fig.set(facecolor='lightgray')
 plt.show()
 
 fig.savefig('linear_regression.jpg', dpi=300, bbox_inches='tight')
 # %%
 # Function that provides the logarithmic flow values for a desired timeframe
+
+
 def Monthly_ObservedFlow(startyear, endyear, month, firstday, lastday):
        '''Variables:
        flow_data: USGS Streamgage 09506000 daily streamflow data values
@@ -347,11 +356,13 @@ def Monthly_ObservedFlow(startyear, endyear, month, firstday, lastday):
        ax.plot(plot.index.day, plot['flow'],
                         label=x)
        ax.set(title='Observed Flow',yscale='log', 
-              ylabel='Log Flow (cfs)')
+              ylabel='Log Flow (cfs)', xlabel='Day in Month')
        fig.set(facecolor='lightgrey')
        plt.show()
 
        return fig
+
+
 # %%
 fig = Monthly_ObservedFlow(2005, 2021, 11, 1, 31)
-fig.savefig('monthly_log_obs', dpi=300, bbox_inches='tight')
+fig.savefig('Nov_log_obs', dpi=300, bbox_inches='tight')
