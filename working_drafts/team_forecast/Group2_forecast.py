@@ -18,6 +18,7 @@ import shapely
 from shapely.geometry import Point
 from netCDF4 import Dataset
 import datetime
+from   sklearn.linear_model import LinearRegression
 
 # %%
 # Our Plan:
@@ -67,12 +68,14 @@ ax.set(title="November flow",
 
 
 ####because in 2004, the flow is extremely high. The data before 2004 can not use 
-flow_data.drop(flow_data[flow_data['year']<2005].index,inplace=True)
+flow_data.drop(flow_data[flow_data['year']<2020].index,inplace=True)
+flow_data_2=flow_data[:]
+flow_data=flow_data[:-2]
 nov_flow = flow_data[flow_data['month'] == 11]
 # %% 
 # Read in NetCDF Precipitation Data
 precip_path = os.path.join('..', 'data', 'Hierarchical_Data',
-                           '1989_2021_NCEP_PrecipRate_Data_v2.nc')
+                           '1989_2021_NCEP_PrecipRate_Data_v4.nc')
 precip = xr.open_dataset(precip_path)
 precip
 
@@ -85,14 +88,15 @@ precip["prate"]["time"].size
 # Extract single point, convert it to dataframe to make time series
 # Extract years, days, months from datetime index to allow for resampling
 # Index 0,0 closest to stream gauge
-lat = precip["prate"]["lat"].values[0]
-lon = precip["prate"]["lon"].values[0]
-point_precip = precip["prate"].sel(lat=lat, lon=lon)
+
+point_precip = precip["prate"]
 precip_df = point_precip.to_dataframe()
+precip_df = precip_df.groupby('time').mean()
 precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
 precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
 precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
-precip_df.drop(precip_df[precip_df['year']<2005].index,inplace=True)
+precip_df.drop(precip_df[precip_df['year']<2020].index,inplace=True)
+
 
 # Resample the data to find and plot mean values for month of November
 nov_precip = precip_df[precip_df['month'] == 11]
@@ -125,11 +129,15 @@ temp["air"]["time"].size
 # Index 0,0 closest to stream gauge
 lat = temp["air"]["lat"].values[0]
 lon = temp["air"]["lon"].values[0]
-point_temp = temp["air"].sel(lat=lat, lon=lon)
+
+point_temp = temp["air"]
 temp_df = point_temp.to_dataframe()
+temp_df = temp_df.groupby('time').mean()
 temp_df['year'] = pd.DatetimeIndex(temp_df.index).year
 temp_df['month'] = pd.DatetimeIndex(temp_df.index).month
 temp_df['day'] = pd.DatetimeIndex(temp_df.index).day
+temp_df.drop(temp_df[temp_df['year']<2020].index,inplace=True)
+
 
 # Resample the data to find and plot mean values for month of November
 nov_temp = temp_df[temp_df['month'] == 11]
@@ -156,7 +164,7 @@ type(precip_val)
 # Add in plot of streamflow behavior during last forecast period
 date_format = mdates.DateFormatter("%m/%d")
 fig, ax = plt.subplots()
-ax.plot(flow_data['flow'], label='Daily Flow', marker='o',
+ax.plot(flow_data_2['flow'], label='Daily Flow', marker='o',
         color='darkturquoise')
 ax.set(title="Observed Flow for Week 11/07/21 - 11/13/21", xlabel="Date",
        ylabel="Flow [cfs]", ylim=[0, 250],
@@ -269,3 +277,54 @@ ctx.add_basemap(ax, crs=saltverde.crs)
 ax.legend()
 fig.set(facecolor='lightgrey')
 plt.show()
+
+
+
+########regression and forecast Xingyu
+#%%
+precip_df
+temp_df
+flow_data
+
+flow_data['precip'] = (precip_df['prate']-np.mean(precip_df['prate']))/np.std(precip_df['prate'])
+flow_data['temp'] = (temp_df['air']-np.mean(temp_df['air']))/np.std(temp_df['air'])
+flow_data
+# %%
+# Build an autoregressive model 
+flow_mean     = flow_data.resample('W').mean()
+flow_mean['flow_tm1'] = flow_mean['flow'].shift(1)
+
+# Using the entire flow data  
+train = flow_mean[1:][['flow', 'flow_tm1' , 'precip', 'temp']]
+
+# Build a linear regression model
+model = LinearRegression()
+x = train[['flow_tm1', 'precip', 'temp']] 
+y = train['flow'].values
+model.fit(x, y)
+
+# Results of the model
+r_sq = model.score(x, y)
+print('coefficient of determination:', np.round(r_sq, 2))
+
+#print the intercept and the slope
+print('intercept:', np.round(model.intercept_, 2))
+print('slope:', np.round(model.coef_, 2))
+
+# Prediction
+prediction = model.predict(train[['flow_tm1', 'precip', 'temp']])
+print(" This week mean flow is ", round(prediction[0], 1))
+print(" This week mean flow is ", round(prediction[1], 1))
+#
+# %%
+# Line  plot comparison of predicted and observed flows
+fig, ax = plt.subplots(figsize=(20,4))
+ax.plot(flow_mean.index[1:], flow_mean['flow'][1:],color='blue', label='simulated 2 lag')
+ax.plot(flow_mean.index[1:], prediction,color='red', label='obs')
+ax.set(title="Linear regression flow results", xlabel="time", ylabel="Simulation with 2 lag (cfs)",
+       yscale='log', ylim=(0,15000))
+ax.legend()
+plt.show()
+
+fig.savefig('forecast.jpg', dpi=300)
+# %%
