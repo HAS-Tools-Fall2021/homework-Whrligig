@@ -7,24 +7,10 @@
 
 2 Week Forecast: **134.9**
 
-Connal:[]
-
-Andrew:[]
-
-Xingyu: Download reanalysis data. Merge the data into one dataframe and normalize it. Calculate the forecast. Write part of the Readme file
-
-Stephanie:[]
 
 
-1. data:
-1.1the streamflow data before 2021 Nov 11, downloaded from the USGS web.
-1.2the precipitaion rate data in 1989 Jan 1st to 2021 Nov 11th, downloaded from the PSl web, averaged by time.
-1.3 the air temperature data in 1989 Jan 1st to 2021 Nov 11th, downloaded from the PSl web, averaged by time.
-(1.1 downloaded by Connal, 1.2 and 1.3 data downloaded by Xingyu)
 
-4. plot[]
 
-5.  map[]
 
 
 =======\
