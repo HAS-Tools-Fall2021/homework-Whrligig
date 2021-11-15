@@ -39,11 +39,40 @@ flow_data = pd.read_table(flow_url, sep='\t', skiprows=30,
                           names=['agency_cd', 'site_no', 'datetime', 'flow',
                                  'code'], parse_dates=['datetime'],
                           index_col=['datetime'])
+flow_data['month'] = pd.DatetimeIndex(flow_data.index).month
+flow_data['day'] = pd.DatetimeIndex(flow_data.index).day
+flow_data['year'] = pd.DatetimeIndex(flow_data.index).year
 
+
+## Xingyu
+#flow_w=flow_data.resample('W').mean()
+flow_y=flow_data.resample('Y').mean()
+flow_w=flow_data
+flow_w['month'] = pd.DatetimeIndex(flow_w.index).month
+flow_w['day'] = pd.DatetimeIndex(flow_w.index).day
+# Resample the data to find and plot mean values for month of November
+nov_flow = flow_w[flow_w['month'] == 11]
+
+
+nov_pmean = nov_flow.groupby('year')['flow'].mean()
+f, ax = plt.subplots(figsize=(12, 6))
+nov_pmean.plot.line(marker="o",
+                    ax=ax,
+                    color="lightgray",
+                    markerfacecolor="steelblue",
+                    markeredgecolor="steelblue")
+ax.set(title="November flow",
+       xlabel="Day of the Month",
+       ylabel="flow (kg/m^2)")
+
+
+####because in 2004, the flow is extremely high. The data before 2004 can not use 
+flow_data.drop(flow_data[flow_data['year']<2005].index,inplace=True)
+nov_flow = flow_data[flow_data['month'] == 11]
 # %% 
 # Read in NetCDF Precipitation Data
 precip_path = os.path.join('..', 'data', 'Hierarchical_Data',
-                           '1989_2021_NCEP_PrecipRate_Data.nc')
+                           '1989_2021_NCEP_PrecipRate_Data_v2.nc')
 precip = xr.open_dataset(precip_path)
 precip
 
@@ -63,6 +92,7 @@ precip_df = point_precip.to_dataframe()
 precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
 precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
 precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
+precip_df.drop(precip_df[precip_df['year']<2005].index,inplace=True)
 
 # Resample the data to find and plot mean values for month of November
 nov_precip = precip_df[precip_df['month'] == 11]
@@ -80,7 +110,7 @@ ax.set(title="November Mean Precipitation For Gauge Location",
 # %%
 # Read in NetCDF temperature data
 data_path = os.path.join('..', 'data', 'Hierarchical_Data',
-                         '2000_2019_NMC_AirTemp.nc')
+                         '1989_2021_NCEP_AirTemp_Data.nc')
 temp = xr.open_dataset(data_path)
 temp
 
