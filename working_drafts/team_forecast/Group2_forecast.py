@@ -269,3 +269,29 @@ ctx.add_basemap(ax, crs=saltverde.crs)
 ax.legend()
 fig.set(facecolor='lightgrey')
 plt.show()
+
+#%%
+# Function that provides the logarithmic flow values for a desired timeframe
+def Monthly_ObservedFlow(startyear, endyear, month, firstday, lastday):
+       '''Variables:
+       flow_data: USGS Streamgage 09506000 daily streamflow data values
+       startyear: First year being viewed intimeseries
+       endyear: Final year being viewed in timeseries
+       month: Month being viewed in timeseries
+       firstday: First day of month
+       lastday: Last day of month'''
+
+       fig, ax = plt.subplots()
+       for x in range(startyear, endyear):
+              plot = flow_data[(flow_data.index.year == x) &
+                        (flow_data.index.month == month) &
+                        (flow_data.index.day >= firstday) &
+                        (flow_data.index.day <= lastday)]
+       ax.plot(plot.index.day, plot['flow'],
+                        label=x)
+       ax.set(title='Observed Flow',yscale='log', 
+              ylabel='Log Flow (cfs)')
+       plt.show()
+
+       return fig
+# %%
