@@ -44,11 +44,11 @@ flow_data['month'] = pd.DatetimeIndex(flow_data.index).month
 flow_data['day'] = pd.DatetimeIndex(flow_data.index).day
 flow_data['year'] = pd.DatetimeIndex(flow_data.index).year
 
-# %%
+
 ## Xingyu
-# flow_w=flow_data.resample('W').mean()
-flow_y = flow_data.resample('Y').mean()
-flow_w = flow_data
+
+flow_y=flow_data.resample('Y').mean()
+flow_w=flow_data
 flow_w['month'] = pd.DatetimeIndex(flow_w.index).month
 flow_w['day'] = pd.DatetimeIndex(flow_w.index).day
 # Resample the data to find and plot mean values for month of November
@@ -63,22 +63,17 @@ nov_pmean.plot.line(marker="o",
                     markerfacecolor="steelblue",
                     markeredgecolor="steelblue")
 ax.set(title="November flow",
-       xlabel="Day of the Month",
+       xlabel="average of each year",
        ylabel="flow (kg/m^2)")
+f.savefig('Nov_flow.jpg', dpi=300, bbox_inches='tight')
 
-
-<<<<<<< HEAD
 ####because in 2004, the flow is extremely high. The data before 2004 can not use 
 flow_data.drop(flow_data[flow_data['year']<2020].index,inplace=True)
 flow_data_2=flow_data[:]
-flow_data=flow_data[:-2]
-=======
-# Because in 2004, the flow is extremely high, cannot use the data before 2004 
-flow_data.drop(flow_data[flow_data['year'] < 2005].index, inplace=True)
->>>>>>> master
+flow_data=flow_data[:-2]  
+## drop Nov 12 and 13 because the reanalysis can only reach Nov 11
 nov_flow = flow_data[flow_data['month'] == 11]
-
-# %%
+# %% 
 # Read in NetCDF Precipitation Data
 precip_path = os.path.join('..', 'data', 'Hierarchical_Data',
                            '1989_2021_NCEP_PrecipRate_Data_v4.nc')
@@ -101,12 +96,8 @@ precip_df = precip_df.groupby('time').mean()
 precip_df['year'] = pd.DatetimeIndex(precip_df.index).year
 precip_df['month'] = pd.DatetimeIndex(precip_df.index).month
 precip_df['day'] = pd.DatetimeIndex(precip_df.index).day
-<<<<<<< HEAD
 precip_df.drop(precip_df[precip_df['year']<2020].index,inplace=True)
 
-=======
-precip_df.drop(precip_df[precip_df['year'] < 2005].index, inplace=True)
->>>>>>> master
 
 # Resample the data to find and plot mean values for month of November
 nov_precip = precip_df[precip_df['month'] == 11]
@@ -120,6 +111,7 @@ nov_pmean.plot.line(marker="o",
 ax.set(title="November Mean Precipitation For Gauge Location",
        xlabel="Day of the Month",
        ylabel="Precp Rate (kg/m^2)")
+f.savefig('Nov_precip.jpg', dpi=300, bbox_inches='tight')
 
 # %%
 # Read in NetCDF temperature data
@@ -163,6 +155,9 @@ ax.set(title="November Mean Temperature For Gauge Location",
        ylabel="Temperature(K)")
 fig.set(facecolor='lightgrey')
 plt.show()
+fig.savefig('Nov_temp.jpg', dpi=300, bbox_inches='tight')
+
+
 
 # Extract precip values as a numpy array for spatial plotting
 precip_val = precip["prate"].values
@@ -175,14 +170,16 @@ date_format = mdates.DateFormatter("%m/%d")
 fig, ax = plt.subplots()
 ax.plot(flow_data_2['flow'], label='Daily Flow', marker='o',
         color='darkturquoise')
-ax.set(title="Observed Flow for Week 11/07/21 - 11/13/21", xlabel="Date",
+ax.set(title="Observed Flow for Week 11/05/21 - 11/11/21", xlabel="Date",
        ylabel="Flow [cfs]", ylim=[0, 250],
-       xlim=[datetime.date(2021, 11, 7), datetime.date(2021, 11, 13)])
+       xlim=[datetime.date(2021, 11, 5), datetime.date(2021, 11, 11)])
 ax.xaxis.set_major_formatter(date_format)
 ax.grid(None, 'major', 'both', alpha=0.15)
 ax.legend(loc='lower right')
 fig.set(facecolor='lightgrey')
 plt.show()
+fig.savefig('last_week_stream_flow.jpg', dpi=300, bbox_inches='tight')
+
 
 # %%
 # Reading in gage data using geopandas
@@ -203,6 +200,7 @@ gages_AZ.plot(column='DRAIN_SQKM', categorical=False,
 ax.set_title("Arizona stream gauge drainge area\n (sq km)")
 fig.set(facecolor='lightgrey')
 plt.show()
+
 
 # %%
 # Read in watershed boundary shapefile
@@ -287,7 +285,6 @@ ax.legend()
 fig.set(facecolor='lightgrey')
 plt.show()
 
-<<<<<<< HEAD
 
 
 ########regression and forecast Xingyu
@@ -336,35 +333,5 @@ ax.set(title="Linear regression flow results", xlabel="time", ylabel="Simulation
 ax.legend()
 plt.show()
 
-fig.savefig('forecast.jpg', dpi=300)
+fig.savefig('linear_regression.jpg', dpi=300, bbox_inches='tight')
 # %%
-=======
-# %%
-# Function that provides the logarithmic flow values for a desired timeframe
-def Monthly_ObservedFlow(startyear, endyear, month, firstday, lastday):
-       '''Variables:
-       flow_data: USGS Streamgage 09506000 daily streamflow data values
-       startyear: First year being viewed intimeseries
-       endyear: Final year being viewed in timeseries
-       month: Month being viewed in timeseries
-       firstday: First day of month
-       lastday: Last day of month'''
-
-       fig, ax = plt.subplots()
-       for x in range(startyear, endyear):
-              plot = flow_data[(flow_data.index.year == x) &
-                        (flow_data.index.month == month) &
-                        (flow_data.index.day >= firstday) &
-                        (flow_data.index.day <= lastday)]
-       ax.plot(plot.index.day, plot['flow'],
-                        label=x)
-       ax.set(title='Observed Flow',yscale='log', 
-              ylabel='Log Flow (cfs)')
-       plt.show()
-
-       return fig
-
-#Use the function for the nov_flow time period
-Monthly_ObservedFlow(2005, 2021, 11, 1, 31)
-
->>>>>>> master
