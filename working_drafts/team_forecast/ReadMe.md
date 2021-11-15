@@ -13,13 +13,7 @@
 2) Week Forecast: **134.9**
 
 <<<<<<< HEAD
-Connal:[]
 
-Andrew:[]
-
-Xingyu: Download reanalysis data. Merge the data into one dataframe and normalize it. Calculate the forecast. Write part of the Readme file
-
-Stephanie:[]
 
 
 
@@ -48,7 +42,9 @@ Stephanie:[]
   - Connal
     - Aided in the creation of the map and time-series plots while cleaning the code and adjusting file paths..
   - Xingyu
-    - Linear regression plots with precipitation rates and air temperatures using NetCDF data from the NOAA PSL website.
+    - 
+    - Download reanalysis data. Merge the data into one dataframe and normalize it. Calculate the forecast.Draw Linear regression plots. Write part of the Readme file.  
+
   - Steph
     - Added a logarithmic function that showed daily flow values for the month of November for a given year.
 
