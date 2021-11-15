@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 
 1 Wk Forecast:156.1
+
 2 Wk Forecast:134.9
 =======
 1) Week Forecast: **156.1**
@@ -33,10 +34,11 @@ Stephanie:[]
 2. Correct the data: becuase the flow data has a great peak in 2005, we cannot use a long time series. Because the linear regression algorithm may be overfitted if the sample time is too lang, I droped the time before 2020. Although the latitude and longitude of precipitation and air temperatrue are different, we can make an average of the whole region(33-37N,246-250E). After that, I merge the streamflow data, precipitation data and the air temperature data into one dataframe. The precipitaiton and air temperature data should be normalinzed(minus mean and devided by std). 
 
 3. Calculate the forecast: resample the data into weekly. the use the precipitation, air temperature and last week flow to train the model. The coefficient of determination is 0.64, so that this model fitted well. In this way, the forecast = 156.1 and 134.9, respectively.
-
+![picture 1](./linear_regression.jpg)
 4. plot[]
+    
 
-5.  map[]
+6.  map[]
 
 
 =======

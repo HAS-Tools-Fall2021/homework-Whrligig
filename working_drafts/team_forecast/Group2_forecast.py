@@ -23,8 +23,7 @@ from   sklearn.linear_model import LinearRegression
 # %%
 # Our Plan:
 
-# Linear regression -- Xingyu (Use middle 10 years,
-# then use most recent 10 years for regression)
+# Linear regression -- Xingyu (Use the recent 1 year data)
        # Air temp regression with precip rate
        # Precip regression with streamflow
 # Adding in precip netcdf, Air Temp netcdf -- Connal
