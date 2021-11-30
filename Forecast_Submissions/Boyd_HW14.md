@@ -2,6 +2,11 @@
 ## Connal Boyd
 ## 11/28/21
 
+___
+## Grade
+3/3: Great job! I'm glad you were able to get some things running. This is a good example of how even when authors put a solid effort into documentation it can still be hard to reproduce results. Enviroment issues are one of the most common reasons why work can be difficult to reproduce. 
+___
+
 ### 1.) What is the paper or project you picked? Include a title, a link to the paper and a 1-2 sentence summary of what its about.
 
 I selected the paper *HydroMix v1.0: a new Bayesian mixing framework for attributing uncertain hydrological sources* by Beria et al., 2020. This paper can be found at the following [link](https://gmd.copernicus.org/articles/13/2433/2020/). The article employs a bayesian modeling approach to quantify source water mixing ratio uncertainty. The study also used their model to quantify contributions of snowmelt v. snowfall to groundwater using isotope tracing.
