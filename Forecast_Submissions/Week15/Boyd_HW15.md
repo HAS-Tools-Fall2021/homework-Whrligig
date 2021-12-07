@@ -2,6 +2,9 @@
 ## Connal Boyd
 ## 12/06/21
 
+### Grade 
+3/3: Great job I'm glad you got it working!  Also a good question on interactive nodes. We'll talk more about this tomorrow. 
+
 **1.) What resources did you request on Puma? How long did you wait in the queue for your job to run and how long did it take to run?**
 
 As far as I know, my script did not need any resources other than one node to run the script. I only had to wait about 7 minutes all in all for the script to complete its run.
